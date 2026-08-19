@@ -59,5 +59,4 @@ ignore = ["B008"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/gnssgo/resources" = "gnssgo/resources"
-"src/gnssgo/data" = "gnssgo/data"
 "src/gnssgo/gui/resources" = "gnssgo/gui/resources"
