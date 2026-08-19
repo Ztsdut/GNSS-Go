@@ -1,0 +1,2265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>GNSS del CSN</name>
+    <Style id="icon-961-009D57-labelson">
+      <IconStyle>
+        <color>ff579d00</color>
+        <scale>1.1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/961-wht-square-blank.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Placemark>
+      <name>PTRE</name>
+      <description><![CDATA[Latitud (°): -18.19428848366<br>Longitud (°): -69.57432918815]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-18.19428848366</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.57432918815</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.57432918815,-18.19428848366,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHYT</name>
+      <description><![CDATA[Latitud (°): -18.37082358998<br>Longitud (°): -70.34208997010]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-18.37082358998</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.34208997010</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.3420899701,-18.37082358998,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PCCL</name>
+      <description><![CDATA[Latitud (°): -18.45767425280<br>Longitud (°): -70.10674448285]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-18.45767425280</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.10674448285</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.10674448285,-18.4576742528,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>UTAR</name>
+      <description><![CDATA[Latitud (°): -18.49064051001<br>Longitud (°): -70.29650003330]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-18.49064051001</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.29650003330</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.2965000333,-18.49064051001,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CMRC</name>
+      <description><![CDATA[Latitud (°): -18.61423896037<br>Longitud (°): -70.32817239524]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-18.61423896037</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.32817239524</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.32817239524,-18.61423896037,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SURI</name>
+      <description><![CDATA[Latitud (°): -18.85376671154<br>Longitud (°): -69.14341576928]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-18.85376671154</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.14341576928</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.14341576928,-18.85376671154,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ATJN</name>
+      <description><![CDATA[Latitud (°): -19.30081574029<br>Longitud (°): -70.13675183736]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-19.30081574029</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.13675183736</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.13675183736,-19.30081574029,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PSGA</name>
+      <description><![CDATA[Latitud (°): -19.59737761816<br>Longitud (°): -70.12301231464]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-19.59737761816</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.12301231464</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.12301231464,-19.59737761816,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>FBAQ</name>
+      <description><![CDATA[Latitud (°): -20.13463161937<br>Longitud (°): -69.75541595453]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.13463161937</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.75541595453</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.75541595453,-20.13463161937,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CGTC</name>
+      <description><![CDATA[Latitud (°): -20.17712624813<br>Longitud (°): -70.06896590651]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.17712624813</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.06896590651</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.06896590651,-20.17712624813,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>UAPE</name>
+      <description><![CDATA[Latitud (°): -20.24299957297<br>Longitud (°): -70.14125968853]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.24299957297</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.14125968853</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.14125968853,-20.24299957297,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>HMBS</name>
+      <description><![CDATA[Latitud (°): -20.27837205636<br>Longitud (°): -69.88773514562]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.27837205636</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.88773514562</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.88773514562,-20.27837205636,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PICC</name>
+      <description><![CDATA[Latitud (°): -20.48984186976<br>Longitud (°): -69.33461775452]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.48984186976</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.33461775452</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.33461775452,-20.48984186976,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>GTA1</name>
+      <description><![CDATA[Latitud (°): -20.56568908496<br>Longitud (°): -70.18073717175]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.56568908496</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.18073717175</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.18073717175,-20.56568908496,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PATH</name>
+      <description><![CDATA[Latitud (°): -20.82075257642<br>Longitud (°): -70.15273022331]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.82075257642</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.15273022331</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.15273022331,-20.82075257642,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CRSC</name>
+      <description><![CDATA[Latitud (°): -20.91767499637<br>Longitud (°): -70.07978184516]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.91767499637</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.07978184516</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.07978184516,-20.91767499637,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CLLA</name>
+      <description><![CDATA[Latitud (°): -20.95448414038<br>Longitud (°): -69.35665020275]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-20.95448414038</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.35665020275</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.35665020275,-20.95448414038,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ELOA</name>
+      <description><![CDATA[Latitud (°): -21.42488727130<br>Longitud (°): -70.05679327866]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-21.42488727130</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.05679327866</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.05679327866,-21.4248872713,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>RADO</name>
+      <description><![CDATA[Latitud (°): -22.08292046310<br>Longitud (°): -68.92680377064]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.08292046310</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-68.92680377064</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -68.92680377064,-22.0829204631,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CDLC</name>
+      <description><![CDATA[Latitud (°): -22.18963623829<br>Longitud (°): -69.76152376970]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.18963623829</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.76152376970</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.7615237697,-22.18963623829,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>MCLA</name>
+      <description><![CDATA[Latitud (°): -22.74581439315<br>Longitud (°): -70.24750163462]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.74581439315</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.24750163462</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.24750163462,-22.74581439315,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CBAA</name>
+      <description><![CDATA[Latitud (°): -22.74636882172<br>Longitud (°): -68.44814948351]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.74636882172</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-68.44814948351</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -68.44814948351,-22.74636882172,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SRGD</name>
+      <description><![CDATA[Latitud (°): -22.87113722809<br>Longitud (°): -69.34783410462]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.87113722809</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.34783410462</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.34783410462,-22.87113722809,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SPAT</name>
+      <description><![CDATA[Latitud (°): -22.95206606089<br>Longitud (°): -68.17878669961]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.95206606089</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-68.17878669961</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -68.17878669961,-22.95206606089,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CJNT</name>
+      <description><![CDATA[Latitud (°): -23.02749082167<br>Longitud (°): -67.76057485972]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-23.02749082167</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-67.76057485972</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -67.76057485972,-23.02749082167,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PMEJ</name>
+      <description><![CDATA[Latitud (°): -23.10082045795<br>Longitud (°): -70.44837806197]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-23.10082045795</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.44837806197</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.44837806197,-23.10082045795,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>VLZL</name>
+      <description><![CDATA[Latitud (°): -23.11723117095<br>Longitud (°): -69.96468861757]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-23.11723117095</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.96468861757</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.96468861757,-23.11723117095,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>JRGN</name>
+      <description><![CDATA[Latitud (°): -23.28891644719<br>Longitud (°): -70.57490855527]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-23.28891644719</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.57490855527</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.57490855527,-23.28891644719,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PB19</name>
+      <description><![CDATA[Latitud (°): -23.89674035291<br>Longitud (°): -69.30226605401]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-23.89674035291</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.30226605401</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.30226605401,-23.89674035291,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CRIS</name>
+      <description><![CDATA[Latitud (°): -24.16794151704<br>Longitud (°): -70.38680224948]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-24.16794151704</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.38680224948</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.38680224948,-24.16794151704,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PRNL</name>
+      <description><![CDATA[Latitud (°): -24.60455288501<br>Longitud (°): -70.38404386032]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-24.60455288501</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.38404386032</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.38404386032,-24.60455288501,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PAPO</name>
+      <description><![CDATA[Latitud (°): -25.10832825456<br>Longitud (°): -70.49526048767]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-25.10832825456</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.49526048767</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.49526048767,-25.10832825456,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CGU2</name>
+      <description><![CDATA[Latitud (°): -25.16262290691<br>Longitud (°): -69.59032484919]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-25.16262290691</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.59032484919</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.59032484919,-25.16262290691,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TLT2</name>
+      <description><![CDATA[Latitud (°): -25.39134287980<br>Longitud (°): -70.47510624152]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-25.39134287980</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.47510624152</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.47510624152,-25.3913428798,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CIFU</name>
+      <description><![CDATA[Latitud (°): -25.65259332684<br>Longitud (°): -70.64700758562]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-25.65259332684</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.64700758562</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.64700758562,-25.65259332684,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PAZU</name>
+      <description><![CDATA[Latitud (°): -26.14790807515<br>Longitud (°): -70.59869332912]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-26.14790807515</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.59869332912</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.59869332912,-26.14790807515,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>FMCO</name>
+      <description><![CDATA[Latitud (°): -26.57898640415<br>Longitud (°): -70.69431056182]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-26.57898640415</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.69431056182</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.69431056182,-26.57898640415,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>INCA</name>
+      <description><![CDATA[Latitud (°): -26.74585281657<br>Longitud (°): -69.91281445723]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-26.74585281657</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.91281445723</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.91281445723,-26.74585281657,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BING</name>
+      <description><![CDATA[Latitud (°): -27.13261260340<br>Longitud (°): -70.85748560924]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-27.13261260340</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.85748560924</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.85748560924,-27.1326126034,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>UDAT</name>
+      <description><![CDATA[Latitud (°): -27.35723430454<br>Longitud (°): -70.35443079402]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-27.35723430454</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.35443079402</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.35443079402,-27.35723430454,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TAMR</name>
+      <description><![CDATA[Latitud (°): -27.59383647154<br>Longitud (°): -70.23464837786]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-27.59383647154</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.23464837786</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.23464837786,-27.59383647154,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LLCH</name>
+      <description><![CDATA[Latitud (°): -28.19034293475<br>Longitud (°): -71.08148117722]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-28.19034293475</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.08148117722</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.08148117722,-28.19034293475,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>HSCO</name>
+      <description><![CDATA[Latitud (°): -28.46145699096<br>Longitud (°): -71.22658609544]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-28.46145699096</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.22658609544</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.22658609544,-28.46145699096,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>VALL</name>
+      <description><![CDATA[Latitud (°): -28.57197474703<br>Longitud (°): -70.76437478467]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-28.57197474703</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.76437478467</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.76437478467,-28.57197474703,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TRST</name>
+      <description><![CDATA[Latitud (°): -28.83626446840<br>Longitud (°): -70.27381155896]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-28.83626446840</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.27381155896</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.27381155896,-28.8362644684,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CRZL</name>
+      <description><![CDATA[Latitud (°): -29.10163671349<br>Longitud (°): -71.40973569118]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-29.10163671349</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.40973569118</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.40973569118,-29.10163671349,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SILL</name>
+      <description><![CDATA[Latitud (°): -29.25490380427<br>Longitud (°): -70.73874389750]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-29.25490380427</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.73874389750</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.7387438975,-29.25490380427,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LHOR</name>
+      <description><![CDATA[Latitud (°): -29.57594532409<br>Longitud (°): -71.29747030397]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-29.57594532409</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.29747030397</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.29747030397,-29.57594532409,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LSCH</name>
+      <description><![CDATA[Latitud (°): -29.90819192291<br>Longitud (°): -71.24603906290]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-29.90819192291</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.24603906290</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.2460390629,-29.90819192291,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>JUNT</name>
+      <description><![CDATA[Latitud (°): -29.97658398657<br>Longitud (°): -70.09359296494]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-29.97658398657</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.09359296494</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.09359296494,-29.97658398657,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TOLO</name>
+      <description><![CDATA[Latitud (°): -30.16989220640<br>Longitud (°): -70.80605146944]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-30.16989220640</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.80605146944</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.80605146944,-30.1698922064,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BTON</name>
+      <description><![CDATA[Latitud (°): -30.26322473741<br>Longitud (°): -71.48720480261]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-30.26322473741</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.48720480261</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.48720480261,-30.26322473741,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PVCA</name>
+      <description><![CDATA[Latitud (°): -30.26751652807<br>Longitud (°): -71.62324124425]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-30.26751652807</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.62324124425</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.62324124425,-30.26751652807,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PFRJ</name>
+      <description><![CDATA[Latitud (°): -30.67474731606<br>Longitud (°): -71.63543441561]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-30.67474731606</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.63543441561</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.63543441561,-30.67474731606,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PEDR</name>
+      <description><![CDATA[Latitud (°): -30.83896966072<br>Longitud (°): -70.68912877447]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-30.83896966072</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.68912877447</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.68912877447,-30.83896966072,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>EMAT</name>
+      <description><![CDATA[Latitud (°): -31.14667555534<br>Longitud (°): -71.66266106499]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-31.14667555534</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.66266106499</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.66266106499,-31.14667555534,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CMB2</name>
+      <description><![CDATA[Latitud (°): -31.20363457143<br>Longitud (°): -71.00055797612]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-31.20363457143</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.00055797612</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.00055797612,-31.20363457143,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CNBA</name>
+      <description><![CDATA[Latitud (°): -31.39822228433<br>Longitud (°): -71.45795891374]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-31.39822228433</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.45795891374</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.45795891374,-31.39822228433,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LVIL</name>
+      <description><![CDATA[Latitud (°): -31.90923998385<br>Longitud (°): -71.51384534249]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-31.90923998385</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.51384534249</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.51384534249,-31.90923998385,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SLM1</name>
+      <description><![CDATA[Latitud (°): -32.04335307684<br>Longitud (°): -70.97450426957]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-32.04335307684</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.97450426957</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.97450426957,-32.04335307684,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ZAPA</name>
+      <description><![CDATA[Latitud (°): -32.55276108071<br>Longitud (°): -71.46558174065]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-32.55276108071</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.46558174065</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.46558174065,-32.55276108071,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CTPC</name>
+      <description><![CDATA[Latitud (°): -32.56113980740<br>Longitud (°): -71.29760247121]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-32.56113980740</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.29760247121</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.29760247121,-32.5611398074,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PORT</name>
+      <description><![CDATA[Latitud (°): -32.83522827288<br>Longitud (°): -70.13002118080]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-32.83522827288</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.13002118080</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.1300211808,-32.83522827288,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ROB1</name>
+      <description><![CDATA[Latitud (°): -32.97582419444<br>Longitud (°): -71.01584388889]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-32.97582419444</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.01584388889</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.01584388889,-32.97582419444,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TRPD</name>
+      <description><![CDATA[Latitud (°): -33.02281091826<br>Longitud (°): -71.64746686352]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.02281091826</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.64746686352</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.64746686352,-33.02281091826,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>QTAY</name>
+      <description><![CDATA[Latitud (°): -33.19272341415<br>Longitud (°): -71.70224402666]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.19272341415</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.70224402666</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.70224402666,-33.19272341415,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SMAR</name>
+      <description><![CDATA[Latitud (°): -33.27273252789<br>Longitud (°): -70.53719336421]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.27273252789</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.53719336421</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.53719336421,-33.27273252789,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>VNEV</name>
+      <description><![CDATA[Latitud (°): -33.35357214153<br>Longitud (°): -70.24906373077]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.35357214153</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.24906373077</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.24906373077,-33.35357214153,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>QSCO</name>
+      <description><![CDATA[Latitud (°): -33.39188869622<br>Longitud (°): -71.70194974228]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.39188869622</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.70194974228</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.70194974228,-33.39188869622,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CALN</name>
+      <description><![CDATA[Latitud (°): -33.39800498849<br>Longitud (°): -70.53718432444]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.39800498849</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.53718432444</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.53718432444,-33.39800498849,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LCRN</name>
+      <description><![CDATA[Latitud (°): -33.42561700000<br>Longitud (°): -70.87534100000]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.42561700000</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.87534100000</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.875341,-33.425617,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHEN</name>
+      <description><![CDATA[Latitud (°): -33.42849287268<br>Longitud (°): -70.52332849604]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.42849287268</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.52332849604</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.52332849604,-33.42849287268,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DGF1</name>
+      <description><![CDATA[Latitud (°): -33.45728015118<br>Longitud (°): -70.66171478265]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.45728015118</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.66171478265</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.66171478265,-33.45728015118,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>UAIB</name>
+      <description><![CDATA[Latitud (°): -33.49323567915<br>Longitud (°): -70.50977438918]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.49323567915</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.50977438918</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.50977438918,-33.49323567915,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>VZCH</name>
+      <description><![CDATA[Latitud (°): -33.59945043332<br>Longitud (°): -70.50644070473]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.59945043332</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.50644070473</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.50644070473,-33.59945043332,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ARJF</name>
+      <description><![CDATA[Latitud (°): -33.62897258789<br>Longitud (°): -78.83664069870]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.62897258789</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-78.83664069870</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -78.8366406987,-33.62897258789,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>RCSD</name>
+      <description><![CDATA[Latitud (°): -33.65441224843<br>Longitud (°): -71.61347163610]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.65441224843</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.61347163610</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.6134716361,-33.65441224843,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SALF</name>
+      <description><![CDATA[Latitud (°): -33.74369590680<br>Longitud (°): -70.28616167761]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.74369590680</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.28616167761</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.28616167761,-33.7436959068,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TLGT</name>
+      <description><![CDATA[Latitud (°): -33.77632063783<br>Longitud (°): -70.98879094415]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.77632063783</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.98879094415</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.98879094415,-33.77632063783,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LME2</name>
+      <description><![CDATA[Latitud (°): -33.84750000000<br>Longitud (°): -70.20340000000]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.84750000000</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.20340000000</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.2034,-33.8475,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>NAVI</name>
+      <description><![CDATA[Latitud (°): -33.95267637200<br>Longitud (°): -71.82462621932]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.95267637200</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.82462621932</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.82462621932,-33.952676372,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHDA</name>
+      <description><![CDATA[Latitud (°): -33.98898041975<br>Longitud (°): -70.60895626761]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-33.98898041975</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.60895626761</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.60895626761,-33.98898041975,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PCMU</name>
+      <description><![CDATA[Latitud (°): -34.49616071775<br>Longitud (°): -71.96116207531]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-34.49616071775</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.96116207531</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.96116207531,-34.49616071775,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SBLL</name>
+      <description><![CDATA[Latitud (°): -34.79208474615<br>Longitud (°): -70.78069909456]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-34.79208474615</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.78069909456</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.78069909456,-34.79208474615,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ILOC</name>
+      <description><![CDATA[Latitud (°): -34.94877183547<br>Longitud (°): -72.17899380904]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-34.94877183547</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.17899380904</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.17899380904,-34.94877183547,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>HLN2</name>
+      <description><![CDATA[Latitud (°): -35.00989214169<br>Longitud (°): -71.93018508733]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-35.00989214169</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.93018508733</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.93018508733,-35.00989214169,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CONS</name>
+      <description><![CDATA[Latitud (°): -35.33095485933<br>Longitud (°): -72.41211887498]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-35.33095485933</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.41211887498</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.41211887498,-35.33095485933,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SJAV</name>
+      <description><![CDATA[Latitud (°): -35.59535729574<br>Longitud (°): -71.73251180798]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-35.59535729574</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.73251180798</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.73251180798,-35.59535729574,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PELL</name>
+      <description><![CDATA[Latitud (°): -35.82788939825<br>Longitud (°): -72.60557136173]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-35.82788939825</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.60557136173</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.60557136173,-35.82788939825,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>QLAP</name>
+      <description><![CDATA[Latitud (°): -36.08448574449<br>Longitud (°): -72.12547439886]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-36.08448574449</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.12547439886</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.12547439886,-36.08448574449,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>VITA</name>
+      <description><![CDATA[Latitud (°): -36.42355291106<br>Longitud (°): -72.86473245564]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-36.42355291106</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.86473245564</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.86473245564,-36.42355291106,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CLL1</name>
+      <description><![CDATA[Latitud (°): -36.59507123083<br>Longitud (°): -72.07995850622]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-36.59507123083</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.07995850622</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.07995850622,-36.59507123083,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>HLPN</name>
+      <description><![CDATA[Latitud (°): -36.74781743299<br>Longitud (°): -73.19024993782]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-36.74781743299</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.19024993782</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.19024993782,-36.74781743299,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PLVP</name>
+      <description><![CDATA[Latitud (°): -37.14883114098<br>Longitud (°): -73.58503051666]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-37.14883114098</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.58503051666</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.58503051666,-37.14883114098,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PECL</name>
+      <description><![CDATA[Latitud (°): -37.68696268801<br>Longitud (°): -73.65056702537]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-37.68696268801</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.65056702537</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.65056702537,-37.68696268801,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IMCH</name>
+      <description><![CDATA[Latitud (°): -38.41201178633<br>Longitud (°): -73.88525990544]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-38.41201178633</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.88525990544</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.88525990544,-38.41201178633,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LNQM</name>
+      <description><![CDATA[Latitud (°): -38.45522269352<br>Longitud (°): -71.36187321682]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-38.45522269352</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.36187321682</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.36187321682,-38.45522269352,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TMCO</name>
+      <description><![CDATA[Latitud (°): -38.76476972278<br>Longitud (°): -72.61372452909]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-38.76476972278</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.61372452909</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.61372452909,-38.76476972278,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SAAV</name>
+      <description><![CDATA[Latitud (°): -38.79155866089<br>Longitud (°): -73.38335981133]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-38.79155866089</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.38335981133</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.38335981133,-38.79155866089,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CRRH</name>
+      <description><![CDATA[Latitud (°): -39.58354014537<br>Longitud (°): -71.47256076774]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-39.58354014537</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.47256076774</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.47256076774,-39.58354014537,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PGLL</name>
+      <description><![CDATA[Latitud (°): -39.63216068458<br>Longitud (°): -72.34549932888]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-39.63216068458</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.34549932888</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.34549932888,-39.63216068458,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CURR</name>
+      <description><![CDATA[Latitud (°): -40.22989294420<br>Longitud (°): -72.00428231464]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-40.22989294420</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.00428231464</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.00428231464,-40.2298929442,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PTRO</name>
+      <description><![CDATA[Latitud (°): -41.13814321672<br>Longitud (°): -72.40292289314]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-41.13814321672</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.40292289314</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.40292289314,-41.13814321672,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>MUER</name>
+      <description><![CDATA[Latitud (°): -41.40520047037<br>Longitud (°): -73.47133995230]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-41.40520047037</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.47133995230</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.4713399523,-41.40520047037,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>LNCM</name>
+      <description><![CDATA[Latitud (°): -42.21507110245<br>Longitud (°): -73.62824153948]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-42.21507110245</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.62824153948</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.62824153948,-42.21507110245,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>FUTF</name>
+      <description><![CDATA[Latitud (°): -43.19053923904<br>Longitud (°): -71.84839519873]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-43.19053923904</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.84839519873</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.84839519873,-43.19053923904,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>GUAF</name>
+      <description><![CDATA[Latitud (°): -43.56658168133<br>Longitud (°): -74.82724070248]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-43.56658168133</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-74.82724070248</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -74.82724070248,-43.56658168133,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>RMBA</name>
+      <description><![CDATA[Latitud (°): -43.77512815103<br>Longitud (°): -72.95334591860]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-43.77512815103</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.95334591860</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.9533459186,-43.77512815103,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>MELK</name>
+      <description><![CDATA[Latitud (°): -43.89674199860<br>Longitud (°): -73.74922786686]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-43.89674199860</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.74922786686</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.74922786686,-43.8967419986,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHAC</name>
+      <description><![CDATA[Latitud (°): -45.45036860937<br>Longitud (°): -72.78942741113]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-45.45036860937</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.78942741113</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.78942741113,-45.45036860937,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>XPLO</name>
+      <description><![CDATA[Latitud (°): -46.48403433931<br>Longitud (°): -73.19481181155]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-46.48403433931</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.19481181155</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.19481181155,-46.48403433931,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>VOHG</name>
+      <description><![CDATA[Latitud (°): -48.46481735092<br>Longitud (°): -72.55657532524]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-48.46481735092</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.55657532524</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.55657532524,-48.46481735092,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CAST</name>
+      <description><![CDATA[Latitud (°): -51.27058228600<br>Longitud (°): -72.33822466711]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-51.27058228600</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.33822466711</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.33822466711,-51.270582286,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PNAT</name>
+      <description><![CDATA[Latitud (°): -51.67916407039<br>Longitud (°): -72.50364685146]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-51.67916407039</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.50364685146</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.50364685146,-51.67916407039,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CSOM</name>
+      <description><![CDATA[Latitud (°): -52.78080754409<br>Longitud (°): -69.22405240496]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-52.78080754409</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.22405240496</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.22405240496,-52.78080754409,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IRSC</name>
+      <description><![CDATA[Latitud (°): -52.85738099244<br>Longitud (°): -71.56985979248]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-52.85738099244</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.56985979248</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.56985979248,-52.85738099244,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PTAR</name>
+      <description><![CDATA[Latitud (°): -53.15523611630<br>Longitud (°): -71.04962484510]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-53.15523611630</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-71.04962484510</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -71.0496248451,-53.1552361163,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PWIL</name>
+      <description><![CDATA[Latitud (°): -54.93217856936<br>Longitud (°): -67.63038666561]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-54.93217856936</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-67.63038666561</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -67.63038666561,-54.93217856936,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>FRAP</name>
+      <description><![CDATA[Latitud (°): -46.80331700000<br>Longitud (°): -75.63836900000]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-46.80331700000</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-75.63836900000</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -75.638369,-46.803317,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PTON</name>
+      <description><![CDATA[Latitud (°): -55.01990000000<br>Longitud (°): -66.92500000000]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-55.01990000000</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-66.92500000000</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -66.925,-55.0199,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ISFX</name>
+      <description><![CDATA[Latitud (°): -26.291690<br>Longitud (°): -80.092894]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-26.291690</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-80.092894</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -80.092894,-26.29169,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CCHR</name>
+      <description><![CDATA[Latitud (°): -47.253012838<br>Longitud (°): -72.5906868]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-47.253012838</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-72.5906868</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -72.5906868,-47.253012838,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PUCA</name>
+      <description><![CDATA[Latitud (°): -40.586414247<br>Longitud (°): -73.73497904]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-40.586414247</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-73.73497904</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -73.73497904,-40.586414247,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>MRCG</name>
+      <description><![CDATA[Latitud (°): -26.83532009<br>Longitud (°): -69.13021094]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-26.83532009</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-69.13021094</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -69.13021094,-26.83532009,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TCPL</name>
+      <description><![CDATA[Latitud (°): -22.086556<br>Longitud (°): -70.195954]]></description>
+      <styleUrl>#icon-961-009D57-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="Latitud (°)">
+          <value>-22.086556</value>
+        </Data>
+        <Data name="Longitud (°)">
+          <value>-70.195954</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -70.195954,-22.086556,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

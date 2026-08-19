@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GNSS Go Map</title>
+    <link rel="stylesheet" href="vendor/leaflet.css">
+    <link rel="stylesheet" href="vendor/MarkerCluster.css">
+    <link rel="stylesheet" href="vendor/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="map.css">
+  </head>
+  <body class="theme-light">
+    <div id="map" role="application" aria-label="GNSS station map"></div>
+    <div id="legend" class="map-legend" aria-label="Station legend">
+      <div class="legend-row"><span class="legend-dot igs_only"></span><span id="legend-igs">IGS global</span></div>
+      <div class="legend-row"><span class="legend-dot regional_only"></span><span id="legend-regional">Regional CORS</span></div>
+      <div class="legend-row"><span class="legend-dot selected"></span><span id="legend-selected">Selected</span></div>
+    </div>
+    <div id="notice">Offline vector basemap</div>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script src="vendor/leaflet.js"></script>
+    <script src="vendor/leaflet.markercluster.js"></script>
+    <script src="map.js"></script>
+  </body>
+</html>

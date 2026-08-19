@@ -1,0 +1,20 @@
+station,latitude,longitude,height,name,source
+HKCL,22.29584206,113.90772086,7.7136,Chek Lap Kok,SatRef coordinate list rev 2024-12-05
+HKFN,22.49468621,114.13816835,41.2119,Fanling,SatRef coordinate list rev 2024-12-05
+HKKS,22.36789916,114.31193359,44.7118,Kau Sai Chau,SatRef coordinate list rev 2024-12-05
+HKKT,22.44490608,114.06656510,34.5764,Kam Tin,SatRef coordinate list rev 2024-12-05
+HKLM,22.21895836,114.12005929,8.5536,Lamma Island,SatRef coordinate list rev 2024-12-05
+HKLT,22.41813413,113.99662346,125.9221,Lam Tei,SatRef coordinate list rev 2024-12-05
+HKMW,22.25581257,114.00317729,194.9461,Mui Wo,SatRef coordinate list rev 2024-12-05
+HKNP,22.24906594,113.89387496,350.6723,Ngong Ping,SatRef coordinate list rev 2024-12-05
+HKOH,22.24768715,114.22855218,166.4011,Obelisk Hill,SatRef coordinate list rev 2024-12-05
+HKPC,22.28494912,114.03784047,18.1303,Peng Chau,SatRef coordinate list rev 2024-12-05
+HKQT,22.29103509,114.21321600,5.1784,Quarry Bay,SatRef coordinate list rev 2024-12-05
+HKSC,22.32217208,114.14118796,20.2386,Stonecutters Island,SatRef coordinate list rev 2024-12-05
+HKSL,22.37200481,113.92798139,95.2972,Siu Lang Shui,SatRef coordinate list rev 2024-12-05
+HKSS,22.43106796,114.26929353,38.7135,Shap Sze Heung,SatRef coordinate list rev 2024-12-05
+HKST,22.39527069,114.18424175,258.7045,Sha Tin,SatRef coordinate list rev 2024-12-05
+HKTK,22.54656893,114.22327818,22.5335,Sha Tau Kok,SatRef coordinate list rev 2024-12-05
+HKWS,22.43428237,114.33537737,63.7909,Wong Shek,SatRef coordinate list rev 2024-12-05
+KYC1,22.28405264,114.07630672,116.3830,Kau Yi Chau,SatRef coordinate list rev 2024-12-05
+T430,22.49472105,114.13819916,41.3228,Trig 430,SatRef coordinate list rev 2024-12-05

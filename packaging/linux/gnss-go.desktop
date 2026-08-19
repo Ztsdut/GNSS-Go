@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=GNSS Go
+Comment=Multi-source GNSS data acquisition and management
+Exec=GNSS-Go
+Icon=gnss-go
+Terminal=false
+Categories=Science;Utility;
+Keywords=GNSS;RINEX;GPS;Galileo;BeiDou;

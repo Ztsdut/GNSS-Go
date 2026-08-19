@@ -1,0 +1,98 @@
+name: Build release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: Windows-x64
+          - os: macos-latest
+            label: macOS
+          - os: ubuntu-latest
+            label: Linux-x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          python -m pip install -U pip
+          pip install -e ".[build,hatanaka,unix-z]"
+
+      - name: Build GUI and CLI
+        shell: bash
+        run: python packaging/build.py --clean --gui --cli
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            V="${GITHUB_REF_NAME#v}"
+          else
+            V="$(python -c 'from gnssgo.version import __version__; print(__version__)')"
+          fi
+          echo "value=$V" >> "$GITHUB_OUTPUT"
+
+      - name: Package Windows installer
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=${{ steps.version.outputs.value }}" "packaging\windows\GNSS-Go.iss"
+          Copy-Item dist\gnssgo.exe "release\gnssgo-${{ steps.version.outputs.value }}-Windows-x64.exe"
+
+      - name: Package macOS DMG
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          mkdir -p release
+          packaging/macos/build_dmg.sh "${{ steps.version.outputs.value }}"
+          cp dist/gnssgo "release/gnssgo-${{ steps.version.outputs.value }}-macOS"
+
+      - name: Package Linux AppImage
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          mkdir -p release build
+          curl -L -o build/appimagetool-x86_64.AppImage https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x build/appimagetool-x86_64.AppImage
+          APPIMAGE_TOOL="$PWD/build/appimagetool-x86_64.AppImage" packaging/linux/build_appimage.sh "${{ steps.version.outputs.value }}"
+          cp dist/gnssgo "release/gnssgo-${{ steps.version.outputs.value }}-Linux-x86_64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GNSS-Go-${{ matrix.label }}
+          path: release/*
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true

@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gnss-go"
+version = "0.1.2"
+description = "An open-source, multi-source GNSS data acquisition and management toolkit."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "GNSS Go contributors" }]
+keywords = ["GNSS", "RINEX", "IGS", "EPN", "download"]
+dependencies = [
+  "httpx[socks]>=0.27",
+  "PySocks>=1.7.1",
+  "paramiko>=3.5",
+  "platformdirs>=4",
+  "pydantic>=2",
+  "pydantic-settings>=2",
+  "PySide6>=6.7",
+  "python-dateutil>=2.9",
+  "tenacity>=8.2",
+  "typer>=0.12",
+  "rich>=13.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-qt>=4.4", "ruff>=0.5"]
+build = ["pyinstaller>=6.10"]
+hatanaka = ["hatanaka>=2.8"]
+unix-z = ["unlzw3>=0.2"]
+docs = ["reportlab>=4.0", "Pillow>=10"]
+
+[project.scripts]
+gnssgo = "gnssgo.cli.app:main"
+gnss-go = "gnssgo.cli.app:main"
+
+[project.gui-scripts]
+gnss-go-gui = "gnssgo.gui.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gnssgo"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "integration: tests that may access remote GNSS data services",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["B008"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/gnssgo/resources" = "gnssgo/resources"
+"src/gnssgo/data" = "gnssgo/data"
+"src/gnssgo/gui/resources" = "gnssgo/gui/resources"
