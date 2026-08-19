@@ -22,8 +22,6 @@ def test_station_json_serialization() -> None:
     assert payload["providers"] == ["whu"]
 
 
-
-
 def test_station_marker_classes_distinguish_igs_regional_and_overlap() -> None:
     igs = Station(id="IGS000AAA", data_networks=["igs"])
     regional = Station(
@@ -101,4 +99,4 @@ def test_product_interval_options_follow_product_type() -> None:
         center="auto",
         tier="auto",
         system="auto",
-    ) == [("2 h", "02H")]
+    ) == [("2 h", "02H"), ("1 h", "01H")]
