@@ -7,8 +7,13 @@ from gnssgo.download import chromium
 def test_find_chromium_browser_uses_path(monkeypatch, tmp_path: Path):
     exe = tmp_path / "msedge"
     exe.write_bytes(b"x")
-    monkeypatch.setattr(chromium.os, "name", "posix")
-    monkeypatch.setattr(chromium.shutil, "which", lambda name: str(exe) if name == "msedge" else None)
+    for env_name in ("PROGRAMFILES(X86)", "PROGRAMFILES", "LOCALAPPDATA"):
+        monkeypatch.delenv(env_name, raising=False)
+    monkeypatch.setattr(
+        chromium.shutil,
+        "which",
+        lambda name: str(exe) if name == "msedge" else None,
+    )
     assert chromium.find_chromium_browser() == exe
 
 
