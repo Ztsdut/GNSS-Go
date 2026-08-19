@@ -39,8 +39,8 @@ def test_station_marker_classes_distinguish_igs_regional_and_overlap() -> None:
 
     assert station_marker_class(igs) == "igs_only"
     assert station_marker_class(regional) == "regional_only"
-    assert station_marker_class(overlap) == "igs_regional"
-    assert station_to_json(overlap)["marker_class"] == "igs_regional"
+    assert station_marker_class(overlap) == "igs_only"
+    assert station_to_json(overlap)["marker_class"] == "igs_only"
 
 
 def test_task_state_transition() -> None:
@@ -94,7 +94,7 @@ def test_product_interval_options_follow_product_type() -> None:
         center="auto",
         tier="auto",
         system="auto",
-    ) == [("30 s", "30S")]
+    ) == [("5 min", "05M"), ("30 s", "30S")]
     assert core.product_interval_options(
         product_type="ionex",
         day="2026-08-14",

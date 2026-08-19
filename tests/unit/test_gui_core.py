@@ -79,7 +79,9 @@ def test_settings_page_save_applies_core_settings(qtbot, tmp_path, monkeypatch) 
     while page.product_provider_priority.list.count() > 0:
         page.product_provider_priority.list.takeItem(0)
     page.product_provider_priority.list.addItems(["esa", "ign"])
-    page.proxy.setText("http://proxy.example:8080")
+    page.proxy_mode.setCurrentIndex(page.proxy_mode.findData("http"))
+    page.proxy_host.setText("proxy.example")
+    page.proxy_port.setValue(8080)
     page.save()
 
     settings = core.client.settings
@@ -92,7 +94,10 @@ def test_settings_page_save_applies_core_settings(qtbot, tmp_path, monkeypatch) 
     assert settings.archive.keep_compressed is True
     assert settings.provider.priority == ["whu", "bkg"]
     assert settings.products.provider_priority == ["esa", "ign"]
-    assert settings.network.proxy == "http://proxy.example:8080"
+    assert settings.network.proxy is None
+    assert settings.network.mode == "http"
+    assert settings.network.host == "proxy.example"
+    assert settings.network.port == 8080
 
 
 def test_main_window_instantiates(qtbot) -> None:
@@ -126,7 +131,11 @@ def test_station_page_map_table_selection_sync(qtbot, tmp_path) -> None:
     assert "AAAA00AAA" in page.table.model().selected
 
     model = page.table.model()
-    model.setData(model.index(1, 0), QtCore.Qt.Checked)
+    bbbb_row = next(
+        index for index, station in enumerate(model.stations)
+        if station.id == "BBBB00BBB"
+    )
+    model.setData(model.index(bbbb_row, 0), QtCore.Qt.Checked)
     page._table_selection_changed()
     assert "BBBB00BBB" in page.selected
 
@@ -259,7 +268,7 @@ def test_observations_sampling_and_review_plan(qtbot) -> None:
     assert page.sampling.itemText(0) == "Auto"
     assert any(page.sampling.itemText(i) == "30 s" for i in range(page.sampling.count()))
     buttons = page.findChildren(_QtWidgets.QPushButton)
-    assert any(button.text() == "Review Plan" for button in buttons)
+    assert any(button.text() == "Plan (PLAN)" for button in buttons)
 
 
 def test_australia_source_title_summary_and_tristate(qtbot) -> None:
@@ -309,7 +318,10 @@ def test_data_network_tree_is_global_regional_continent_country_source(qtbot) ->
     asia = next(regional.child(i) for i in range(regional.childCount()) if regional.child(i).text(0) == "Asia")
     korea = next(asia.child(i) for i in range(asia.childCount()) if asia.child(i).text(0) == "Korea")
     assert korea.childCount() == 2
-    assert {korea.child(i).text(0) for i in range(korea.childCount())} == {
+    assert {
+        korea.child(i).text(0).split("   ", 1)[0]
+        for i in range(korea.childCount())
+    } == {
         "KASI KASINet / KVN FTP", "National GNSS Data Center"
     }
 
