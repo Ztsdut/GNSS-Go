@@ -41,6 +41,7 @@ gnss-go-gui = "gnssgo.gui.app:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gnssgo"]
+dev-mode-exact = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -57,6 +58,4 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "B", "UP", "SIM"]
 ignore = ["B008"]
 
-[tool.hatch.build.targets.wheel.force-include]
-"src/gnssgo/resources" = "gnssgo/resources"
-"src/gnssgo/gui/resources" = "gnssgo/gui/resources"
+include = ["src/gnssgo/**/*.py", "src/gnssgo/resources/**", "src/gnssgo/gui/resources/**"]
