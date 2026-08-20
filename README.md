@@ -12,6 +12,14 @@ The public naming is now consistent:
 - **Environment-variable prefix:** `GNSSGO_`
 
 
+## Interface preview
+
+<p align="center">
+  <img src="docs/images/gnss-go-english-interface.png" alt="GNSS Go English interface" width="100%">
+</p>
+
+<p align="center"><em>GNSS Go English desktop interface.</em></p>
+
 ## User manual
 
 Separate Chinese and English manuals are provided:
