@@ -40,8 +40,23 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y             libegl1             libgl1             libxkbcommon-x11-0             libxcb-cursor0             libnss3             libxcomposite1             libxdamage1             libxrandr2             libxtst6
+          set -e
+
+          for attempt in 1 2 3; do
+            echo "apt-get update attempt ${attempt}/3"
+            if sudo apt-get update               -o Acquire::Retries=5               -o Acquire::http::Timeout=30               -o Acquire::https::Timeout=30; then
+              break
+            fi
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "apt-get update failed after 3 attempts"
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends             libegl1             libgl1             libxkbcommon-x11-0             libxcb-cursor0             libnss3             libxcomposite1             libxdamage1             libxrandr2             libxtst6
 
       - name: Install build dependencies
         shell: bash
