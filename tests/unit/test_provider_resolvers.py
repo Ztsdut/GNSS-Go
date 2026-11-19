@@ -49,10 +49,15 @@ def test_igs_mirror_navigation_candidates(provider_factory, expected_prefix) -> 
 
 
 @pytest.mark.anyio
-async def test_whu_observation_candidates() -> None:
+async def test_whu_observation_candidates(monkeypatch) -> None:
     urls = WHUPathResolver().observation_candidates("WUH200CHN", date(2026, 8, 1))
     assert len(urls) == 3
 
+    def list_directory(directory: str) -> list[str]:
+        assert directory == "ftp://igs.gnsswhu.cn/pub/gps/data/daily/2026/213/26d/"
+        return ["WUH200CHN_R_20262130000_01D_30S_MO.crx.gz"]
+
+    monkeypatch.setattr("gnssgo.providers.mirrors.list_ftp_filenames", list_directory)
     provider = WHUProvider(check_existing=False)
     request = ObservationRequest(
         stations=["WUH200CHN"],
@@ -62,6 +67,7 @@ async def test_whu_observation_candidates() -> None:
     files = await provider.search_observations(request)
     assert len(files) == 1
     assert files[0].provider == "whu"
+    assert files[0].filename == "WUH200CHN_R_20262130000_01D_30S_MO.crx.gz"
     assert files[0].url.startswith("ftp://igs.gnsswhu.cn/pub/gps/data/daily/2026/213/26d/")
 
 
