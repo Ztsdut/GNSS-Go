@@ -1,6 +1,12 @@
+import pytest
+
 from gnssgo import GNSSGo
 from gnssgo.config import load_settings
+from gnssgo.download.events import CancellationToken
 from gnssgo.gui.main_window import MainWindow
+from gnssgo.gui.models.tasks import GuiTaskType
+from gnssgo.gui.pages.base import PlanUiState
+from gnssgo.gui.pages.navigation import NavigationPage
 from gnssgo.gui.pages.observations import ObservationsPage
 from gnssgo.gui.pages.settings import SettingsPage
 from gnssgo.gui.pages.stations import StationsPage
@@ -12,11 +18,17 @@ from gnssgo.gui.widgets.australia_source_filter import AustraliaSourceFilter
 from gnssgo.gui.widgets.data_network_filter import DataNetworkFilter
 from gnssgo.gui.widgets.map_view import MapView, NativeMapCanvas
 from gnssgo.gui.widgets.provider_selector import ProviderSelector
-from gnssgo.models import Station
+from gnssgo.models import DownloadPlan, DownloadTask, RemoteFile, Station
+from gnssgo.plan import PlanEstimate, PlanProgress, PlanStage
 from gnssgo.providers.base import GNSSProvider, ProviderCapabilities
 from gnssgo.providers.registry import ProviderRegistry
 
 QtCore, _QtGui, _QtWidgets = require_qt()
+
+
+@pytest.fixture(autouse=True)
+def _skip_session_catalog_refresh(qapp) -> None:
+    qapp.setProperty("gnssgo_skip_session_catalog_refresh", True)
 
 
 class CapabilityProvider(GNSSProvider):
@@ -35,6 +47,28 @@ class CapabilityProvider(GNSSProvider):
 
     async def search_products(self, request):
         return []
+
+
+def _fake_plan(tmp_path) -> DownloadPlan:
+    remote = RemoteFile(
+        provider="unit",
+        url="https://example.test/BRDC00IGS_R_20262130000_01D_MN.rnx.gz",
+        filename="BRDC00IGS_R_20262130000_01D_MN.rnx.gz",
+        compression=".gz",
+        data_type="nav",
+    )
+    return DownloadPlan(
+        remote_files=[remote],
+        download_tasks=[
+            DownloadTask(
+                remote=remote,
+                destination=tmp_path / remote.filename,
+                temporary_path=tmp_path / f"{remote.filename}.part",
+            )
+        ],
+        provider_stats={"unit": 1},
+        provider_requested="auto",
+    )
 
 
 def test_provider_selector_preserves_dynamic_items(qtbot) -> None:
@@ -268,7 +302,143 @@ def test_observations_sampling_and_review_plan(qtbot) -> None:
     assert page.sampling.itemText(0) == "Auto"
     assert any(page.sampling.itemText(i) == "30 s" for i in range(page.sampling.count()))
     buttons = page.findChildren(_QtWidgets.QPushButton)
-    assert any(button.text() == "Plan (PLAN)" for button in buttons)
+    assert any(button.text() == "Plan" for button in buttons)
+
+
+def test_plan_button_state_machine_and_invalidation(qtbot, tmp_path) -> None:
+    core = CoreService(GNSSGo(settings=load_settings()))
+    page = NavigationPage(core, TaskService(core))
+    qtbot.addWidget(page)
+    plan = _fake_plan(tmp_path)
+
+    page._last_plan_context = {
+        "name": "Navigation download",
+        "task_type": GuiTaskType.NAV,
+        "request": {},
+        "plan": plan,
+        "estimate": page._estimate_plan_request(
+            GuiTaskType.NAV,
+            {"start": "2026-08-01", "end": "2026-08-01"},
+        ),
+    }
+    page._set_plan_state(PlanUiState.READY)
+
+    assert page.review.text() == "View Plan"
+    page.review.click()
+    assert page._plan_popup is not None
+    assert page._plan_popup.isVisible()
+
+    page.nav_type.setCurrentText("gps")
+
+    assert page.review.text() == "Plan"
+    assert page._last_plan_context is None
+
+
+def test_plan_cancel_and_planning_invalidation(qtbot) -> None:
+    core = CoreService(GNSSGo(settings=load_settings()))
+    page = NavigationPage(core, TaskService(core))
+    qtbot.addWidget(page)
+
+    token = CancellationToken()
+    page._active_plan_token = token
+    page._active_plan_key = "active"
+    page._set_plan_state(PlanUiState.PLANNING)
+
+    page.review.click()
+
+    assert token.cancelled
+    assert page.review.text() == "Plan"
+    assert page._active_plan_key is None
+
+    token = CancellationToken()
+    page._active_plan_token = token
+    page._active_plan_key = "active"
+    page._set_plan_state(PlanUiState.PLANNING)
+
+    page.nav_type.setCurrentText("gps")
+
+    assert token.cancelled
+    assert page.review.text() == "Plan"
+    assert page._last_plan_context is None
+
+
+def test_plan_status_bar_progress_is_clickable(qtbot) -> None:
+    core = CoreService(GNSSGo(settings=load_settings()))
+    page = NavigationPage(core, TaskService(core))
+    window = _QtWidgets.QMainWindow()
+    window.setStatusBar(_QtWidgets.QStatusBar())
+    window.setCentralWidget(page)
+    qtbot.addWidget(window)
+    window.show()
+
+    token = CancellationToken()
+    estimate = PlanEstimate(station_count=None, day_count=1, candidate_file_count=4)
+    page._active_plan_token = token
+    page._active_plan_key = "active"
+    page._active_plan_estimate = estimate
+    page._set_plan_state(PlanUiState.PLANNING)
+    page._plan_progress_updated(
+        PlanProgress(
+            stage=PlanStage.CHECKING_AVAILABILITY,
+            message="Checking availability",
+            completed=2,
+            total=4,
+            elapsed_seconds=3.0,
+            estimate=estimate,
+        )
+    )
+
+    assert page._plan_status_button is not None
+    assert page._plan_status_button.isVisible()
+    assert "50%" in page._plan_status_button.text()
+
+    page._plan_status_button.click()
+
+    assert page._plan_progress_popup is not None
+    assert page._plan_progress_popup.isVisible()
+    assert "2/4" in page._plan_progress_popup.status.text()
+
+    page._plan_progress_popup.cancel.click()
+
+    assert token.cancelled
+    assert page.review.text() == "Plan"
+    assert not page._plan_status_button.isVisible()
+
+
+def test_plan_popup_download_uses_existing_download_flow(qtbot, tmp_path, monkeypatch) -> None:
+    core = CoreService(GNSSGo(settings=load_settings()))
+    tasks = TaskService(core)
+    page = NavigationPage(core, tasks)
+    qtbot.addWidget(page)
+    plan = _fake_plan(tmp_path)
+    started = []
+
+    monkeypatch.setattr(page, "_ensure_download_dependencies", lambda _plan: True)
+    monkeypatch.setattr(
+        page,
+        "run_download",
+        lambda task, used_plan: started.append((task, used_plan)),
+    )
+    context = {
+        "name": "Navigation download",
+        "task_type": GuiTaskType.NAV,
+        "request": {"start": "2026-08-01", "end": "2026-08-01"},
+        "plan": plan,
+        "estimate": page._estimate_plan_request(
+            GuiTaskType.NAV,
+            {"start": "2026-08-01", "end": "2026-08-01"},
+        ),
+    }
+    page._last_plan_context = context
+    page._set_plan_state(PlanUiState.READY)
+
+    page._show_plan_popup()
+    assert page._plan_popup is not None
+    page._plan_popup.download.click()
+
+    assert started and started[0][1] is plan
+    assert tasks.tasks[0].plan is plan
+    assert page.review.text() == "Plan"
 
 
 def test_australia_source_title_summary_and_tristate(qtbot) -> None:
@@ -315,8 +485,16 @@ def test_data_network_tree_is_global_regional_continent_country_source(qtbot) ->
         "Africa", "Antarctica", "Asia", "Europe", "Latin America", "North America", "Oceania"
     ]
 
-    asia = next(regional.child(i) for i in range(regional.childCount()) if regional.child(i).text(0) == "Asia")
-    korea = next(asia.child(i) for i in range(asia.childCount()) if asia.child(i).text(0) == "Korea")
+    asia = next(
+        regional.child(i)
+        for i in range(regional.childCount())
+        if regional.child(i).text(0) == "Asia"
+    )
+    korea = next(
+        asia.child(i)
+        for i in range(asia.childCount())
+        if asia.child(i).text(0) == "Korea"
+    )
     assert korea.childCount() == 2
     assert {
         korea.child(i).text(0).split("   ", 1)[0]

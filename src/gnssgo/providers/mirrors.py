@@ -132,6 +132,7 @@ class IGSMirrorProvider(GNSSProvider):
             follow_redirects=True,
             trust_env=False,
         )
+        self._directory_listing_cache: dict[str, list[str]] = {}
 
     def capabilities(self) -> ProviderCapabilities:
         products = ["orbit", "clock", "erp", "sinex"] if self.resolver._product_directory else []
@@ -144,11 +145,46 @@ class IGSMirrorProvider(GNSSProvider):
         )
 
     async def search_observations(self, request: ObservationRequest) -> list[RemoteFile]:
+        if self.name != "noaa" and (
+            len(request.stations or []) > 1 or len(request.date_range.days()) > 1
+        ):
+            return await self._search_observations_by_day_directory(request)
         files: list[RemoteFile] = []
         for day in request.date_range.days():
             for station in request.stations or []:
                 urls = await self._discover_observation_urls(station, day, request)
                 for url in urls:
+                    files.append(_remote(self.name, url, "obs", station=station, day=day))
+        return files
+
+    async def _search_observations_by_day_directory(
+        self,
+        request: ObservationRequest,
+    ) -> list[RemoteFile]:
+        files: list[RemoteFile] = []
+        stations = list(request.stations or [])
+        for day in request.date_range.days():
+            directory = self.resolver.observation_directory(day)
+            filenames = await self._list_directory_cached(directory)
+            if filenames:
+                for station in stations:
+                    matches = _observation_matches_for_station(
+                        filenames,
+                        station,
+                        request,
+                    )
+                    for url in _preferred_observation_urls(
+                        [directory + name for name in matches]
+                    ):
+                        files.append(_remote(self.name, url, "obs", station=station, day=day))
+                continue
+
+            if self.check_existing or not self.resolver.fallback_to_candidates:
+                continue
+            for station in stations:
+                for url in _preferred_observation_urls(
+                    self.resolver.observation_candidates(station, day)
+                ):
                     files.append(_remote(self.name, url, "obs", station=station, day=day))
         return files
 
@@ -181,7 +217,7 @@ class IGSMirrorProvider(GNSSProvider):
         directory = self.resolver.observation_directory(day)
         if self.name == "noaa":
             directory = f"{directory}{station.lower()[:4]}/"
-        filenames = await self._list_directory(directory)
+        filenames = await self._list_directory_cached(directory)
         station_upper = station.upper()
         station_lower = station.lower()
         matches = [
@@ -210,7 +246,7 @@ class IGSMirrorProvider(GNSSProvider):
     ) -> list[str]:
         found: list[str] = []
         for directory in self.resolver.navigation_directories(day, nav_type):
-            filenames = await self._list_directory(directory)
+            filenames = await self._list_directory_cached(directory)
             matches = [name for name in filenames if _matches_navigation_request(name, nav_type)]
             found.extend(directory + name for name in matches)
         if found:
@@ -230,6 +266,11 @@ class IGSMirrorProvider(GNSSProvider):
         except httpx.HTTPError:
             return []
         return parse_listing_filenames(response.text)
+
+    async def _list_directory_cached(self, directory: str) -> list[str]:
+        if directory not in self._directory_listing_cache:
+            self._directory_listing_cache[directory] = await self._list_directory(directory)
+        return list(self._directory_listing_cache[directory])
 
     async def _discover_product_urls(
         self,
@@ -302,6 +343,25 @@ def _matches_rinex_request(filename: str, request: ObservationRequest) -> bool:
     return lower.endswith((".crx.gz", ".rnx.gz", ".crx", ".rnx")) or (
         LEGACY_OBS_RE.search(lower) is not None
     )
+
+
+def _observation_matches_for_station(
+    filenames: list[str],
+    station: str,
+    request: ObservationRequest,
+) -> list[str]:
+    station_upper = station.upper()
+    station_lower = station.lower()
+    return [
+        name
+        for name in filenames
+        if (
+            name.startswith(station_upper)
+            or name.startswith(station_lower)
+            or name[:4].lower() == station_lower[:4]
+        )
+        and _matches_rinex_request(name, request)
+    ]
 
 
 def _matches_navigation_request(filename: str, nav_type: NavigationType) -> bool:

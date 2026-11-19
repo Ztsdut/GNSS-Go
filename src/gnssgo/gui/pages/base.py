@@ -1,19 +1,37 @@
 from __future__ import annotations
 
+# ruff: noqa: E501
 import importlib
 import importlib.util
 import subprocess
 import sys
+from contextlib import suppress
 from datetime import date
+from enum import StrEnum
+from inspect import signature
 
 from gnssgo.download.events import CancellationToken
 from gnssgo.gui.i18n import language_manager
 from gnssgo.gui.models.tasks import GuiTaskType
 from gnssgo.gui.qt import require_qt
-from gnssgo.gui.widgets.download_plan import DownloadPlanDialog
+from gnssgo.gui.widgets.plan_progress import (
+    PlanProgressPanel,
+    PlanSummaryPopup,
+    compact_plan_status,
+)
 from gnssgo.gui.workers.base import FunctionWorker
+from gnssgo.plan import PlanEstimate, PlanProgress
 
 QtCore, _QtGui, QtWidgets = require_qt()
+
+
+class PlanUiState(StrEnum):
+    IDLE = "idle"
+    PLANNING = "planning"
+    READY = "ready"
+    ERROR = "error"
+    CANCELLED = "cancelled"
+    STALE = "stale"
 
 
 class CorePage(QtWidgets.QWidget):
@@ -29,6 +47,52 @@ class CorePage(QtWidgets.QWidget):
         self.plan_thread_pool = QtCore.QThreadPool(self)
         self.plan_thread_pool.setMaxThreadCount(2)
         self._plan_workers: set[object] = set()
+        self._plan_button: QtWidgets.QPushButton | None = None
+        self._plan_submit_callback = None
+        self._plan_state = PlanUiState.IDLE
+        self._active_plan_token: CancellationToken | None = None
+        self._active_plan_key: str | None = None
+        self._active_plan_estimate: PlanEstimate | None = None
+        self._last_plan_progress: PlanProgress | None = None
+        self._last_plan_context: dict | None = None
+        self._plan_popup: PlanSummaryPopup | None = None
+        self._plan_progress_popup: PlanProgressPanel | None = None
+        self._plan_status_button: QtWidgets.QToolButton | None = None
+
+    def register_plan_button(self, button: QtWidgets.QPushButton, submit_callback) -> None:
+        self._plan_button = button
+        self._plan_submit_callback = submit_callback
+        button.clicked.connect(self._plan_button_clicked)
+        self._apply_plan_button_state()
+
+    def invalidate_plan(self, *_args) -> None:
+        if self._plan_state == PlanUiState.PLANNING:
+            self._cancel_active_plan(update_state=False)
+            self._set_plan_state(PlanUiState.STALE)
+            self._show_status("Plan inputs changed", 5000)
+            return
+        if self._last_plan_context is None and self._plan_state in {
+            PlanUiState.IDLE,
+            PlanUiState.ERROR,
+            PlanUiState.CANCELLED,
+        }:
+            return
+        self._last_plan_context = None
+        self._active_plan_key = None
+        self._close_plan_popup()
+        self._close_plan_progress_popup()
+        self._hide_plan_status_button()
+        self._set_plan_state(PlanUiState.STALE)
+
+    def _plan_button_clicked(self) -> None:
+        if self._plan_state == PlanUiState.PLANNING:
+            self._cancel_active_plan()
+            return
+        if self._plan_state == PlanUiState.READY and self._last_plan_context is not None:
+            self._show_plan_popup()
+            return
+        if callable(self._plan_submit_callback):
+            self._plan_submit_callback()
 
     def run_plan(self, *, name: str, task_type: GuiTaskType, request: dict, planner) -> None:
         # Planning is only a preview.  Do not create a download-queue task until
@@ -37,37 +101,64 @@ class CorePage(QtWidgets.QWidget):
         # which made the preview dialog look redundant and suggested that a
         # transfer had already been queued.
         token = CancellationToken()
+        estimate = self._estimate_plan_request(task_type, request)
+        plan_key = self._plan_key(task_type, request)
+        self._active_plan_token = token
+        self._active_plan_key = plan_key
+        self._active_plan_estimate = estimate
+        self._last_plan_progress = None
+        self._last_plan_context = None
+        self._close_plan_popup()
+        self._close_plan_progress_popup()
+        self._set_plan_state(PlanUiState.PLANNING)
 
         def guarded_planner():
             token.raise_if_cancelled()
-            result = planner()
+            kwargs = {
+                "progress_callback": lambda progress: worker.signals.progress.emit(progress),
+                "cancellation_token": token,
+                "plan_estimate": estimate,
+            }
+            result = planner(**kwargs) if _planner_accepts_progress(planner) else planner()
             token.raise_if_cancelled()
             return result
 
         def on_started() -> None:
-            if token.cancelled:
+            if token.cancelled or self._active_plan_key != plan_key:
                 return
-            window = self.window()
-            status = getattr(window, "statusBar", None)
-            if callable(status):
-                status().showMessage("Planning download…")
+            self._show_clickable_plan_status(self._initial_plan_status(estimate))
 
         def on_result(plan) -> None:
-            if token.cancelled:
+            if token.cancelled or self._active_plan_key != plan_key:
                 return
-            window = self.window()
-            status = getattr(window, "statusBar", None)
-            if callable(status):
-                status().showMessage("Plan ready", 3000)
-            self._show_plan(name=name, task_type=task_type, request=request, plan=plan)
+            self._active_plan_token = None
+            self._active_plan_estimate = None
+            self._last_plan_progress = None
+            self._close_plan_progress_popup()
+            self._hide_plan_status_button()
+            self._last_plan_context = {
+                "name": name,
+                "task_type": task_type,
+                "request": request,
+                "plan": plan,
+                "estimate": estimate,
+            }
+            self._set_plan_state(PlanUiState.READY)
+            self._show_status(f"Plan ready | {len(plan.download_tasks):,} tasks", 5000)
 
         def on_error(message: str) -> None:
-            if token.cancelled:
+            if self._active_plan_key != plan_key:
                 return
-            window = self.window()
-            status = getattr(window, "statusBar", None)
-            if callable(status):
-                status().showMessage("Planning failed", 5000)
+            self._active_plan_token = None
+            if token.cancelled or "Planning cancelled" in message:
+                self._planning_cancelled()
+                return
+            self._active_plan_estimate = None
+            self._last_plan_progress = None
+            self._close_plan_progress_popup()
+            self._hide_plan_status_button()
+            self._set_plan_state(PlanUiState.ERROR)
+            self._show_status("Planning failed", 5000)
             box = QtWidgets.QMessageBox(self)
             box.setIcon(QtWidgets.QMessageBox.Critical)
             box.setWindowTitle("Planning failed")
@@ -80,34 +171,230 @@ class CorePage(QtWidgets.QWidget):
         # Keep a Python reference until the worker's finished signal is delivered.
         self._plan_workers.add(worker)
         worker.signals.started.connect(on_started)
+        worker.signals.progress.connect(self._plan_progress_updated)
         worker.signals.result.connect(on_result)
         worker.signals.error.connect(on_error)
         worker.signals.finished.connect(lambda w=worker: self._plan_workers.discard(w))
         self.plan_thread_pool.start(worker)
 
-    def _show_plan(self, *, name: str, task_type: GuiTaskType, request: dict, plan) -> None:
-        # A valid provider response can still contain zero files (for example a
-        # GA station/day with no archived RINEX).  Treat that as a completed
-        # planning result, not a READY download with zero files.
-        if (
-            task_type == GuiTaskType.OBS
-            and not plan.remote_files
-            and not plan.existing_files
-        ):
-            self._show_no_data_message(plan)
-            return
+    def _plan_progress_updated(self, progress: PlanProgress) -> None:
+        self._last_plan_progress = progress
+        if self._plan_state == PlanUiState.PLANNING:
+            self._show_clickable_plan_status(compact_plan_status(progress))
+            if self._plan_progress_popup is not None:
+                self._plan_progress_popup.update_progress(progress)
 
-        dialog = DownloadPlanDialog(plan, self)
-        if dialog.exec() == QtWidgets.QDialog.Accepted:
-            # Only now does the plan become a real download task and enter the
-            # Downloads page. Closing the preview leaves no queue entry behind.
-            if not self._ensure_download_dependencies(plan):
-                return
-            task = self.task_service.create_task(
-                name=name, task_type=task_type, request=request
-            )
-            self.task_service.attach_plan(task, plan)
-            self.run_download(task, plan)
+    def _planning_cancelled(self) -> None:
+        self._active_plan_token = None
+        self._active_plan_estimate = None
+        self._last_plan_progress = None
+        self._last_plan_context = None
+        self._active_plan_key = None
+        self._close_plan_progress_popup()
+        self._hide_plan_status_button()
+        self._set_plan_state(PlanUiState.CANCELLED)
+        self._show_status("Planning cancelled", 5000)
+
+    def _cancel_active_plan(self, *, update_state: bool = True) -> None:
+        if self._active_plan_token is not None:
+            self._active_plan_token.cancel()
+        self._active_plan_token = None
+        self._active_plan_key = None
+        self._active_plan_estimate = None
+        self._last_plan_progress = None
+        self._last_plan_context = None
+        self._close_plan_popup()
+        self._close_plan_progress_popup()
+        self._hide_plan_status_button()
+        if update_state:
+            self._show_status("Planning cancelled", 5000)
+            self._set_plan_state(PlanUiState.CANCELLED)
+
+    def _set_plan_state(self, state: PlanUiState) -> None:
+        self._plan_state = state
+        self._apply_plan_button_state()
+
+    def _apply_plan_button_state(self) -> None:
+        if self._plan_button is None:
+            return
+        labels = {
+            PlanUiState.IDLE: "Plan",
+            PlanUiState.PLANNING: "Cancel Plan",
+            PlanUiState.READY: "View Plan",
+            PlanUiState.ERROR: "Plan",
+            PlanUiState.CANCELLED: "Plan",
+            PlanUiState.STALE: "Plan",
+        }
+        self._plan_button.setText(labels[self._plan_state])
+        self._plan_button.setEnabled(True)
+
+    def _show_status(self, message: str, timeout: int = 0) -> None:
+        window = self.window()
+        status = getattr(window, "statusBar", None)
+        if callable(status):
+            status().showMessage(message, timeout)
+
+    def _ensure_plan_status_button(self) -> QtWidgets.QToolButton | None:
+        if self._plan_status_button is not None:
+            return self._plan_status_button
+        window = self.window()
+        status = getattr(window, "statusBar", None)
+        if not callable(status):
+            return None
+        bar = status()
+        button = QtWidgets.QToolButton(bar)
+        button.setObjectName("PlanStatusButton")
+        button.setCursor(QtCore.Qt.PointingHandCursor)
+        button.setToolTip("Show planning progress")
+        button.clicked.connect(self._show_plan_progress_popup)
+        button.hide()
+        bar.addWidget(button)
+        self._plan_status_button = button
+        return button
+
+    def _show_clickable_plan_status(self, message: str) -> None:
+        button = self._ensure_plan_status_button()
+        if button is None:
+            self._show_status(message)
+            return
+        window = self.window()
+        status = getattr(window, "statusBar", None)
+        if callable(status):
+            status().clearMessage()
+        button.setText(message)
+        button.show()
+
+    def _hide_plan_status_button(self) -> None:
+        if self._plan_status_button is not None:
+            with suppress(RuntimeError):
+                self._plan_status_button.hide()
+
+    def _show_plan_progress_popup(self) -> None:
+        if self._plan_state != PlanUiState.PLANNING:
+            return
+        self._close_plan_progress_popup()
+        self._plan_progress_popup = PlanProgressPanel(parent=self.window())
+        self._plan_progress_popup.setWindowFlags(
+            QtCore.Qt.Popup | QtCore.Qt.FramelessWindowHint
+        )
+        self._plan_progress_popup.update_estimate(self._active_plan_estimate)
+        if self._last_plan_progress is not None:
+            self._plan_progress_popup.update_progress(self._last_plan_progress)
+        self._plan_progress_popup.cancelRequested.connect(self._cancel_active_plan)
+        self._plan_progress_popup.destroyed.connect(
+            lambda *_args: setattr(self, "_plan_progress_popup", None)
+        )
+        anchor_widget: QtWidgets.QWidget | None = self._plan_status_button
+        if anchor_widget is None and self._plan_button is not None:
+            anchor_widget = self._plan_button
+        if anchor_widget is not None:
+            anchor = anchor_widget.mapToGlobal(anchor_widget.rect().topLeft())
+            self._plan_progress_popup.adjustSize()
+            popup_height = self._plan_progress_popup.sizeHint().height()
+            self._plan_progress_popup.move(anchor.x(), anchor.y() - popup_height - 8)
+        self._plan_progress_popup.show()
+        self._plan_progress_popup.raise_()
+
+    def _plan_key(self, task_type: GuiTaskType, request: dict) -> str:
+        return repr((task_type.value, sorted(request.items(), key=lambda item: item[0])))
+
+    def _estimate_plan_request(
+        self,
+        task_type: GuiTaskType,
+        request: dict,
+    ) -> PlanEstimate | None:
+        try:
+            start = date.fromisoformat(str(request.get("start")))
+            end = date.fromisoformat(str(request.get("end")))
+            day_count = (end - start).days + 1
+        except Exception:
+            day_count = None
+        if task_type == GuiTaskType.OBS:
+            station_count = len(request.get("stations") or [])
+            candidates = station_count * day_count if day_count is not None else None
+        elif task_type == GuiTaskType.NAV:
+            station_count = None
+            candidates = day_count
+        else:
+            products = len(request.get("product_types") or [])
+            station_count = None
+            candidates = products * day_count if day_count is not None else None
+        return PlanEstimate(
+            station_count=station_count,
+            day_count=day_count,
+            candidate_file_count=candidates,
+            large=bool(candidates and candidates > 20_000),
+        )
+
+    def _initial_plan_status(self, estimate: PlanEstimate | None) -> str:
+        if estimate and estimate.large:
+            return "Planning | Large plan"
+        return "Planning | Preparing"
+
+    def _plan_ready_summary(self, plan, estimate: PlanEstimate | None) -> str:
+        stations = (
+            estimate.station_count
+            if estimate and estimate.station_count is not None
+            else "n/a"
+        )
+        days = estimate.day_count if estimate and estimate.day_count is not None else "n/a"
+        return (
+            f"Plan ready · Stations: {stations} · Days: {days} · "
+            f"Candidate files: {len(plan.remote_files):,} · "
+            f"Available tasks: {len(plan.download_tasks):,} · "
+            f"Unavailable: {len(plan.unavailable):,}"
+        )
+
+    def _show_plan_popup(self) -> None:
+        context = self._last_plan_context
+        if context is None:
+            return
+        self._close_plan_popup()
+        self._plan_popup = PlanSummaryPopup(
+            title=str(context["name"]),
+            plan=context["plan"],
+            estimate=context["estimate"],
+            download_callback=lambda: self._download_saved_plan(context),
+            parent=self.window(),
+        )
+        if self._plan_button is not None:
+            anchor = self._plan_button.mapToGlobal(self._plan_button.rect().topLeft())
+            self._plan_popup.move(anchor.x() - 260, anchor.y() - self._plan_popup.height() - 8)
+        self._plan_popup.destroyed.connect(lambda *_args: setattr(self, "_plan_popup", None))
+        self._plan_popup.show()
+        self._plan_popup.raise_()
+
+    def _close_plan_popup(self) -> None:
+        if self._plan_popup is not None:
+            with suppress(RuntimeError):
+                self._plan_popup.close()
+            self._plan_popup = None
+
+    def _close_plan_progress_popup(self) -> None:
+        if self._plan_progress_popup is not None:
+            with suppress(RuntimeError):
+                self._plan_progress_popup.close()
+            self._plan_progress_popup = None
+
+    def _download_saved_plan(self, context: dict) -> None:
+        plan = context["plan"]
+        if not self._ensure_download_dependencies(plan):
+            return
+        task = self.task_service.create_task(
+            name=context["name"],
+            task_type=context["task_type"],
+            request=context["request"],
+        )
+        self.task_service.attach_plan(task, plan)
+        self._last_plan_context = None
+        self._active_plan_key = None
+        self._active_plan_estimate = None
+        self._last_plan_progress = None
+        self._close_plan_popup()
+        self._close_plan_progress_popup()
+        self._hide_plan_status_button()
+        self._set_plan_state(PlanUiState.IDLE)
+        self.run_download(task, plan)
 
     def _ensure_download_dependencies(self, plan) -> bool:
         """Ensure protocol/proxy extras exist before a download task is queued."""
@@ -245,14 +532,17 @@ class CorePage(QtWidgets.QWidget):
             hint = "请尝试更换日期、站点或数据源。"
         else:
             title = "No data found"
-            intro = "No downloadable observation files were found for the selected provider, stations and dates."
+            intro = (
+                "No downloadable observation files were found for the selected provider, "
+                "stations and dates."
+            )
             details = "\n".join(f"• {item}" for item in shown)
             more = f"\n… and {remaining} more" if remaining else ""
             hint = "Try another date, station, or provider."
         current_day_note = ""
         request = plan.requests[0] if plan.requests else None
         date_range = getattr(request, "date_range", None)
-        if date_range is not None and getattr(date_range, "end", None) is not None:
+        if date_range is not None and getattr(date_range, "end", None) is not None:  # noqa: SIM102
             if date_range.end >= date.today():
                 if language_manager.language == "zh":
                     current_day_note = (
@@ -265,16 +555,18 @@ class CorePage(QtWidgets.QWidget):
                         "are commonly published only after the UTC day has finished and the "
                         "data center has generated the archive; try the previous day first."
                     )
-        body = f"{intro}\n\n{details}{more}\n\n{hint}{current_day_note}" if details else f"{intro}\n\n{hint}{current_day_note}"
+        body = (
+            f"{intro}\n\n{details}{more}\n\n{hint}{current_day_note}"
+            if details
+            else f"{intro}\n\n{hint}{current_day_note}"
+        )
         # Avoid a nested modal event loop inside a worker-result signal.
         # On some PySide6/Windows builds this can race with QRunnable cleanup
         # and crash immediately after the user clicks OK.
         previous = getattr(self, "_no_data_message_box", None)
         if previous is not None:
-            try:
+            with suppress(RuntimeError):
                 previous.close()
-            except RuntimeError:
-                pass
         box = QtWidgets.QMessageBox(self)
         box.setIcon(QtWidgets.QMessageBox.Information)
         box.setWindowTitle(title)
@@ -308,3 +600,15 @@ class CorePage(QtWidgets.QWidget):
         )
         worker.signals.error.connect(lambda message: self.task_service.fail(task, message))
         self.thread_pool.start(worker)
+
+
+def _planner_accepts_progress(planner) -> bool:
+    try:
+        params = signature(planner).parameters
+    except (TypeError, ValueError):
+        return False
+    return any(param.kind == param.VAR_KEYWORD for param in params.values()) or {
+        "progress_callback",
+        "cancellation_token",
+        "plan_estimate",
+    }.intersection(params)

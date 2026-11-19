@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections.abc import Awaitable, Callable
+from contextlib import suppress
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from time import monotonic
 from uuid import uuid4
 
 from gnssgo.archive import ArchiveLayout, Manifest
@@ -25,6 +28,13 @@ from gnssgo.models import (
     ProviderAttempt,
     RemoteFile,
 )
+from gnssgo.plan import (
+    PlanCancelledError,
+    PlanEstimate,
+    PlanProgress,
+    PlanProgressCallback,
+    PlanStage,
+)
 from gnssgo.products import ProductResolver, validate_product_file
 from gnssgo.providers import ProviderRegistry, default_registry
 from gnssgo.regional_sources import default_regional_source_registry
@@ -32,6 +42,9 @@ from gnssgo.rinex.detect import detect_compression, is_compact_rinex
 from gnssgo.rinex.postprocess import PostProcessor
 from gnssgo.stations import StationCatalog
 from gnssgo.utils.checksum import file_checksum
+
+PLAN_MAX_CONCURRENCY = 8
+LOGGER = logging.getLogger(__name__)
 
 
 class GNSSGo:
@@ -47,10 +60,8 @@ class GNSSGo:
         # national day-directory discovery (notably Chile CSN) can use the same
         # proxy route as the downloader instead of silently bypassing it.
         for provider_name in self.registry.names():
-            try:
-                setattr(self.registry.get(provider_name), "_network_settings", self.settings.network)
-            except Exception:
-                pass
+            with suppress(Exception):
+                self.registry.get(provider_name)._network_settings = self.settings.network
         self.layout = ArchiveLayout(self.settings.archive.root, self.settings.archive.layout)
         self.product_resolver = ProductResolver(
             center_priority=self.settings.products.center_priority,
@@ -78,7 +89,19 @@ class GNSSGo:
         output: str | Path | None = None,
         overwrite: bool | None = None,
         keep_compressed: bool | None = None,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
+        started = monotonic()
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.PREPARING,
+            message="Preparing download plan",
+            estimate=plan_estimate,
+        )
+        _raise_if_plan_cancelled(cancellation_token)
         data_networks, regional_sources = _resolve_regional_source_filters(
             data_networks,
             regional_sources,
@@ -95,6 +118,12 @@ class GNSSGo:
         if use_provider_discovery:
             station_codes, matched = [], []
         else:
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.RESOLVING_STATIONS,
+                message="Resolving stations",
+            )
             station_codes, matched = self._resolve_observation_stations(
                 stations=stations or [],
                 station_file=station_file,
@@ -106,6 +135,16 @@ class GNSSGo:
                 regional_sources=regional_sources,
                 country=country,
             )
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.RESOLVING_STATIONS,
+                completed=len(station_codes),
+                total=len(station_codes),
+                message="Resolved stations",
+                estimate=_estimate_observation_plan(station_codes, DateRange(start=start, end=end)),
+            )
+        _raise_if_plan_cancelled(cancellation_token)
         request = ObservationRequest(
             stations=station_codes,
             date_range=DateRange(start=start, end=end),
@@ -125,6 +164,10 @@ class GNSSGo:
             overwrite=overwrite,
             keep_compressed=keep_compressed,
             per_station_auto=True,
+            progress_callback=progress_callback,
+            cancellation_token=cancellation_token,
+            started_at=started,
+            plan_estimate=plan_estimate,
         )
         if use_provider_discovery:
             plan.matched_stations = sorted(
@@ -132,6 +175,16 @@ class GNSSGo:
             )
         else:
             plan.matched_stations = [station.id for station in matched] or station_codes
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.COMPLETED,
+            completed=len(plan.remote_files),
+            total=len(plan.remote_files) + len(plan.unavailable),
+            message="Plan completed",
+            cancelable=False,
+            estimate=plan_estimate,
+        )
         return plan
 
     def plan_observations(self, *args, **kwargs) -> DownloadPlan:
@@ -146,20 +199,47 @@ class GNSSGo:
         output: str | Path | None = None,
         overwrite: bool | None = None,
         keep_compressed: bool | None = None,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
+        started = monotonic()
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.PREPARING,
+            message="Preparing navigation plan",
+            estimate=plan_estimate,
+        )
+        _raise_if_plan_cancelled(cancellation_token)
         request = NavigationRequest(
             date_range=DateRange(start=start, end=end),
             provider=provider,
             nav_type=nav_type,
         )
-        return await self._build_plan(
+        plan = await self._build_plan(
             request=request,
             provider=provider,
             search=lambda p: p.search_navigation(request),
             output=output,
             overwrite=overwrite,
             keep_compressed=keep_compressed,
+            progress_callback=progress_callback,
+            cancellation_token=cancellation_token,
+            started_at=started,
+            plan_estimate=plan_estimate,
         )
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.COMPLETED,
+            completed=len(plan.remote_files),
+            total=len(plan.remote_files) + len(plan.unavailable),
+            message="Plan completed",
+            cancelable=False,
+            estimate=plan_estimate,
+        )
+        return plan
 
     def plan_navigation(self, *args, **kwargs) -> DownloadPlan:
         return asyncio.run(self.plan_navigation_async(*args, **kwargs))
@@ -177,7 +257,19 @@ class GNSSGo:
         output: str | Path | None = None,
         overwrite: bool | None = None,
         keep_compressed: bool | None = None,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
+        started = monotonic()
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.PREPARING,
+            message="Preparing product plan",
+            estimate=plan_estimate,
+        )
+        _raise_if_plan_cancelled(cancellation_token)
         request = ProductRequest(
             date_range=DateRange(start=start, end=end),
             provider=provider,
@@ -187,14 +279,29 @@ class GNSSGo:
             system=system,
             sampling=sampling,
         )
-        return await self._build_plan(
+        plan = await self._build_plan(
             request=request,
             provider=provider,
             search=lambda p: p.search_products(request),
             output=output,
             overwrite=overwrite,
             keep_compressed=keep_compressed,
+            progress_callback=progress_callback,
+            cancellation_token=cancellation_token,
+            started_at=started,
+            plan_estimate=plan_estimate,
         )
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.COMPLETED,
+            completed=len(plan.remote_files),
+            total=len(plan.remote_files) + len(plan.unavailable),
+            message="Plan completed",
+            cancelable=False,
+            estimate=plan_estimate,
+        )
+        return plan
 
     def plan_products(self, *args, **kwargs) -> DownloadPlan:
         return asyncio.run(self.plan_products_async(*args, **kwargs))
@@ -401,19 +508,63 @@ class GNSSGo:
         overwrite: bool | None,
         keep_compressed: bool | None,
         per_station_auto: bool = False,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        started_at: float | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
+        started = started_at or monotonic()
         root = Path(output) if output else self.settings.archive.root
         layout = ArchiveLayout(root, self.settings.archive.layout)
+        _raise_if_plan_cancelled(cancellation_token)
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.RESOLVING_SOURCES,
+            message="Resolving data sources",
+            estimate=plan_estimate,
+        )
         if (
             provider == "auto"
             and isinstance(request, ObservationRequest | NavigationRequest)
         ):
-            remotes, attempts = await self._search_logical_files(request)
+            remotes, attempts = await self._search_logical_files(
+                request,
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                started_at=started,
+                plan_estimate=plan_estimate,
+            )
         elif isinstance(request, ProductRequest):
-            remotes, attempts = await self._search_products_with_provider(request, provider)
+            remotes, attempts = await self._search_products_with_provider(
+                request,
+                provider,
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                started_at=started,
+                plan_estimate=plan_estimate,
+            )
         else:
-            remotes, attempts = await self._search_with_provider(provider, search)
+            remotes, attempts = await self._search_with_provider(
+                provider,
+                search,
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                started_at=started,
+                plan_estimate=plan_estimate,
+            )
+        _raise_if_plan_cancelled(cancellation_token)
         remote_files = _deduplicate_logical_files(remotes)
+        remote_files = _sort_remote_files_for_request(request, remote_files)
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.BUILDING_TASKS,
+            completed=0,
+            total=len(remote_files),
+            message="Building download tasks",
+            estimate=plan_estimate,
+        )
         if isinstance(request, ProductRequest):
             resolution = self.product_resolver.select_bundle(request, remote_files)
             selected_urls = {item.url for item in resolution.selected if item.url}
@@ -448,7 +599,8 @@ class GNSSGo:
             else keep_compressed
         )
         use_decompress = self.settings.archive.auto_extract
-        for remote in plan.remote_files:
+        for index, remote in enumerate(plan.remote_files, start=1):
+            _raise_if_plan_cancelled(cancellation_token)
             destination = layout.destination_for(remote)
             # In compressed-output mode the archive itself is the canonical local
             # file.  In extraction mode the restored/decompressed RINEX is canonical.
@@ -472,21 +624,55 @@ class GNSSGo:
                         decompress=use_decompress,
                     )
                 )
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.BUILDING_TASKS,
+                completed=index,
+                total=len(plan.remote_files),
+                message="Building download tasks",
+                estimate=plan_estimate,
+            )
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.FINALIZING,
+            completed=len(plan.remote_files),
+            total=len(plan.remote_files),
+            message="Finalizing plan",
+            estimate=plan_estimate,
+        )
         return plan
 
     async def _search_logical_files(
         self,
         request: ObservationRequest | NavigationRequest,
+        *,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        started_at: float | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
-        semaphore = asyncio.Semaphore(self.settings.download.workers)
+        started = started_at or monotonic()
+        max_workers = max(1, min(self.settings.download.workers, PLAN_MAX_CONCURRENCY))
+        semaphore = asyncio.Semaphore(max_workers)
         provider_semaphores = {
-            provider.name: asyncio.Semaphore(self.settings.download.per_provider_workers)
+            provider.name: asyncio.Semaphore(
+                max(1, min(self.settings.download.per_provider_workers, PLAN_MAX_CONCURRENCY))
+            )
             for provider in self.registry.ordered(self.settings.provider.priority)
         }
+        _raise_if_plan_cancelled(cancellation_token)
 
         if isinstance(request, ObservationRequest) and request.discover_available:
             return await self._resolve_observation_network_discovery(
-                request, semaphore, provider_semaphores
+                request,
+                semaphore,
+                provider_semaphores,
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                started_at=started,
+                plan_estimate=plan_estimate,
             )
 
         observation_routes = (
@@ -496,6 +682,7 @@ class GNSSGo:
         )
         files: list[RemoteFile] = []
         attempts: list[ProviderAttempt] = []
+        completed_units = 0
 
         # Some regional providers can resolve all selected stations/days in one
         # call.  This is important for directory/SFTP-backed archives: expanding
@@ -521,27 +708,66 @@ class GNSSGo:
                 if getattr(provider_obj, "batch_observation_passthrough", False):
                     passthrough_groups.setdefault(provider_name, []).append(station)
 
+        igs_batch_stations: list[str] = []
+        if isinstance(request, ObservationRequest):
+            for station in request.stations or []:
+                route = observation_routes.get(station.upper())
+                if not route:
+                    continue
+                priority, route_mode = route
+                if route_mode in {
+                    "igs_mirrors",
+                    "regional_igs_station",
+                } and self._supports_igs_directory_batch(priority):
+                    igs_batch_stations.append(station)
+
+        if igs_batch_stations:
+            batch_request = request.model_copy(update={"stations": igs_batch_stations})
+            batch_files, batch_attempts = await self._resolve_observation_igs_batch(
+                batch_request,
+                observation_routes,
+                semaphore,
+                provider_semaphores,
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                started_at=started,
+                plan_estimate=plan_estimate,
+            )
+            files.extend(batch_files)
+            attempts.extend(batch_attempts)
+            completed_units += len(batch_request.date_range.days()) * max(
+                1, len(self.settings.provider.priority)
+            )
+
         for provider_name, batch_stations in passthrough_groups.items():
+            _raise_if_plan_cancelled(cancellation_token)
             batch_request = request.model_copy(update={"stations": batch_stations})
             batch_files, batch_attempts = await self._resolve_observation_passthrough_batch(
                 batch_request,
                 provider_name,
                 semaphore,
                 provider_semaphores,
+                cancellation_token=cancellation_token,
             )
             files.extend(batch_files)
             attempts.extend(batch_attempts)
+            completed_units += len(batch_stations) * len(batch_request.date_range.days())
 
         # EPN is special: ROB can resolve a whole station/date range in one
         # provider call, but keeps the traditional one-file-per-station/day
         # semantics after discovery.
         if epn_stations:
+            _raise_if_plan_cancelled(cancellation_token)
             epn_request = request.model_copy(update={"stations": epn_stations})
             batch_files, batch_attempts = await self._resolve_epn_batch(
-                epn_request, semaphore, provider_semaphores
+                epn_request,
+                semaphore,
+                provider_semaphores,
+                cancellation_token=cancellation_token,
             )
             files.extend(batch_files)
             attempts.extend(batch_attempts)
+            completed_units += len(epn_stations) * len(epn_request.date_range.days())
 
         items = _expand_logical_requests(request)
         batched_ids = {
@@ -550,6 +776,7 @@ class GNSSGo:
             for station in stations
         }
         batched_ids.update(station.upper() for station in epn_stations)
+        batched_ids.update(station.upper() for station in igs_batch_stations)
         if batched_ids:
             items = [
                 item
@@ -560,35 +787,203 @@ class GNSSGo:
                 )
             ]
 
-        results = await asyncio.gather(
-            *[
-                self._resolve_logical_file(
-                    item,
-                    semaphore,
-                    provider_semaphores,
-                    provider_route=(
-                        observation_routes.get((item.stations or [""])[0].upper())
-                        if isinstance(item, ObservationRequest)
-                        else None
-                    ),
-                )
-                for item in items
-            ]
+        total_units = completed_units + len(items)
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.CHECKING_AVAILABILITY,
+            completed=min(completed_units, total_units),
+            total=total_units,
+            message="Checking data availability",
+            estimate=plan_estimate,
         )
-        for selected, item_attempts, missing_key in results:
+        tasks = [
+            self._resolve_logical_file(
+                item,
+                semaphore,
+                provider_semaphores,
+                provider_route=(
+                    observation_routes.get((item.stations or [""])[0].upper())
+                    if isinstance(item, ObservationRequest)
+                    else None
+                ),
+                cancellation_token=cancellation_token,
+            )
+            for item in items
+        ]
+        for future in asyncio.as_completed(tasks):
+            _raise_if_plan_cancelled(cancellation_token)
+            selected, item_attempts, missing_key = await future
+            completed_units += 1
             attempts.extend(item_attempts)
             if selected:
                 files.append(selected)
             elif missing_key:
                 key = ProviderAttempt(provider="auto", status="missing", message=missing_key)
                 attempts.append(key)
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.CHECKING_AVAILABILITY,
+                completed=min(completed_units, total_units),
+                total=total_units,
+                message="Checking data availability",
+                estimate=plan_estimate,
+            )
+        if not tasks:
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.CHECKING_AVAILABILITY,
+                completed=total_units,
+                total=total_units,
+                message="Checked data availability",
+                estimate=plan_estimate,
+            )
         return files, attempts
+
+    async def _resolve_observation_igs_batch(
+        self,
+        request: ObservationRequest,
+        observation_routes: dict[str, tuple[list[str], str]],
+        global_semaphore: asyncio.Semaphore,
+        provider_semaphores: dict[str, asyncio.Semaphore],
+        *,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        started_at: float | None = None,
+        plan_estimate: PlanEstimate | None = None,
+    ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
+        started = started_at or monotonic()
+        stations = [station.upper() for station in request.stations or []]
+        days = request.date_range.days()
+        unresolved = {(station, day) for station in stations for day in days}
+        selected_files: list[RemoteFile] = []
+        attempts: list[ProviderAttempt] = []
+        if not unresolved:
+            return selected_files, attempts
+
+        first_route = observation_routes.get(stations[0]) if stations else None
+        priority = first_route[0] if first_route else list(self.settings.provider.priority)
+        route_mode = first_route[1] if first_route else "igs_mirrors"
+        registered = set(self.registry.names())
+        providers = [
+            self.registry.get(name)
+            for name in priority
+            if name.lower() in registered
+            and self.registry.get(name).capabilities().observations
+        ]
+        total_units = max(1, len(providers) * len(days))
+        completed_units = 0
+        LOGGER.debug(
+            "[PLAN] source=IGS stations=%s days=%s candidate_pairs=%s providers=%s",
+            len(stations),
+            len(days),
+            len(unresolved),
+            ",".join(provider.name for provider in providers),
+        )
+
+        for provider in providers:
+            _raise_if_plan_cancelled(cancellation_token)
+            if not unresolved:
+                break
+            provider_semaphore = provider_semaphores.setdefault(
+                provider.name,
+                asyncio.Semaphore(
+                    max(1, min(self.settings.download.per_provider_workers, PLAN_MAX_CONCURRENCY))
+                ),
+            )
+            try:
+                async with global_semaphore, provider_semaphore:
+                    files = await provider.search_observations(request)
+            except (GNSSGoError, OSError) as exc:
+                attempts.append(
+                    ProviderAttempt(
+                        provider=provider.name,
+                        status="failed",
+                        message=f"igs-batch:{type(exc).__name__}: {exc}",
+                    )
+                )
+                files = []
+
+            grouped: dict[tuple[str, date], list[RemoteFile]] = {}
+            for remote in files:
+                if not remote.station or remote.date is None:
+                    continue
+                key = (remote.station.upper(), remote.date)
+                short_key = (remote.station[:4].upper(), remote.date)
+                if key in unresolved:
+                    grouped.setdefault(key, []).append(remote)
+                elif short_key in unresolved:
+                    grouped.setdefault(short_key, []).append(remote)
+
+            resolved_now = 0
+            for key, candidates in grouped.items():
+                if key not in unresolved:
+                    continue
+                selected = _preferred_logical_candidate(candidates)
+                station, day = key
+                selected.metadata["logical_request_key"] = (
+                    f"obs:{station}:{day.isoformat()}:{request.sampling or ''}:"
+                    f"{request.rinex.value}"
+                )
+                selected.metadata["provider_route"] = route_mode
+                selected.metadata["provider_route_candidates"] = ",".join(priority)
+                selected.metadata["attempted_providers"] = provider.name
+                selected_files.append(selected)
+                unresolved.remove(key)
+                resolved_now += 1
+
+            attempts.append(
+                ProviderAttempt(
+                    provider=provider.name,
+                    status="success" if resolved_now else "not_found",
+                    message=(
+                        f"igs-batch:{resolved_now} resolved; "
+                        f"{len(unresolved)} remaining"
+                    ),
+                )
+            )
+            completed_units += len(days)
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.CHECKING_AVAILABILITY,
+                completed=min(completed_units, total_units),
+                total=total_units,
+                message=(
+                    f"Checking IGS availability via {provider.name} "
+                    f"({resolved_now} resolved)"
+                ),
+                estimate=plan_estimate,
+            )
+
+        for station, day in sorted(unresolved):
+            attempts.append(
+                ProviderAttempt(
+                    provider="auto",
+                    status="missing",
+                    message=f"obs:{station}:{day.isoformat()}:{request.sampling or ''}:"
+                    f"{request.rinex.value}",
+                )
+            )
+        LOGGER.debug(
+            "[PLAN] source=IGS resolved=%s unresolved=%s",
+            len(selected_files),
+            len(unresolved),
+        )
+        return selected_files, attempts
 
     async def _resolve_observation_network_discovery(
         self,
         request: ObservationRequest,
         global_semaphore: asyncio.Semaphore,
         provider_semaphores: dict[str, asyncio.Semaphore],
+        *,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        started_at: float | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
         """Discover a whole regional day directory in one provider call.
 
@@ -633,11 +1028,13 @@ class GNSSGo:
             return [], [ProviderAttempt(provider="auto", status="failed", message=message)]
 
         provider = candidates[0]
+        started = started_at or monotonic()
         provider_semaphore = provider_semaphores.setdefault(
             provider.name, asyncio.Semaphore(self.settings.download.per_provider_workers)
         )
         scope = ",".join(request.regional_sources or request.data_networks or [])
         try:
+            _raise_if_plan_cancelled(cancellation_token)
             async with global_semaphore, provider_semaphore:
                 files = await provider.search_observations(
                     request.model_copy(update={"stations": []})
@@ -658,6 +1055,15 @@ class GNSSGo:
             remote.metadata["availability_scope"] = "official_day_directory"
 
         status = "success" if files else "not_found"
+        _emit_plan_progress(
+            progress_callback,
+            started,
+            PlanStage.CHECKING_AVAILABILITY,
+            completed=1,
+            total=1,
+            message=f"Checked provider directory via {provider.name}",
+            estimate=plan_estimate,
+        )
         return files, [
             ProviderAttempt(
                 provider=provider.name,
@@ -672,6 +1078,8 @@ class GNSSGo:
         provider_name: str,
         global_semaphore: asyncio.Semaphore,
         provider_semaphores: dict[str, asyncio.Semaphore],
+        *,
+        cancellation_token: CancellationToken | None = None,
     ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
         """Resolve a regional observation batch without collapsing its files.
 
@@ -689,6 +1097,7 @@ class GNSSGo:
             f"{request.date_range.start.isoformat()}..{request.date_range.end.isoformat()}"
         )
         try:
+            _raise_if_plan_cancelled(cancellation_token)
             async with global_semaphore, provider_semaphore:
                 discovered = await provider.search_observations(request)
         except Exception as exc:
@@ -729,6 +1138,8 @@ class GNSSGo:
         request: ObservationRequest,
         global_semaphore: asyncio.Semaphore,
         provider_semaphores: dict[str, asyncio.Semaphore],
+        *,
+        cancellation_token: CancellationToken | None = None,
     ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
         provider = self.registry.get("epn")
         provider_semaphore = provider_semaphores.setdefault(
@@ -739,6 +1150,7 @@ class GNSSGo:
             f"{request.date_range.start.isoformat()}..{request.date_range.end.isoformat()}"
         )
         try:
+            _raise_if_plan_cancelled(cancellation_token)
             async with global_semaphore, provider_semaphore:
                 discovered = await provider.search_observations(request)
         except (GNSSGoError, OSError) as exc:
@@ -775,6 +1187,7 @@ class GNSSGo:
         global_semaphore: asyncio.Semaphore,
         provider_semaphores: dict[str, asyncio.Semaphore],
         provider_route: tuple[list[str], str] | None = None,
+        cancellation_token: CancellationToken | None = None,
     ) -> tuple[RemoteFile | None, list[ProviderAttempt], str | None]:
         attempts: list[ProviderAttempt] = []
         selected: RemoteFile | None = None
@@ -798,6 +1211,7 @@ class GNSSGo:
             candidates = self.registry.ordered(priority)
 
         for candidate in candidates:
+            _raise_if_plan_cancelled(cancellation_token)
             if (
                 isinstance(request, ObservationRequest)
                 and not candidate.capabilities().observations
@@ -865,19 +1279,35 @@ class GNSSGo:
         self,
         request: ProductRequest,
         provider: str,
+        *,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        started_at: float | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
         if provider != "auto":
             return await self._search_with_provider(
                 provider,
                 lambda p: p.search_products(request),
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                started_at=started_at,
+                plan_estimate=plan_estimate,
             )
 
+        started = started_at or monotonic()
         attempts: list[ProviderAttempt] = []
         collected: list[RemoteFile] = []
-        for tier in self.product_resolver.tier_order(request):
+        candidates = self.registry.ordered(self.settings.products.provider_priority)
+        tiers = self.product_resolver.tier_order(request)
+        total = max(1, len(candidates) * len(tiers))
+        completed = 0
+        for tier in tiers:
+            _raise_if_plan_cancelled(cancellation_token)
             tier_request = request.model_copy(update={"tier": tier})
             tier_files: list[RemoteFile] = []
-            for candidate in self.registry.ordered(self.settings.products.provider_priority):
+            for candidate in candidates:
+                _raise_if_plan_cancelled(cancellation_token)
                 try:
                     files = await candidate.search_products(tier_request)
                 except (GNSSGoError, OSError) as exc:
@@ -904,6 +1334,16 @@ class GNSSGo:
                             status=f"not_found_{tier.value}",
                         )
                     )
+                completed += 1
+                _emit_plan_progress(
+                    progress_callback,
+                    started,
+                    PlanStage.CHECKING_AVAILABILITY,
+                    completed=completed,
+                    total=total,
+                    message=f"Checking products via {candidate.name}",
+                    estimate=plan_estimate,
+                )
             tier_files = _deduplicate_logical_files(tier_files)
             collected.extend(tier_files)
             resolution = self.product_resolver.select_bundle(tier_request, tier_files)
@@ -983,6 +1423,18 @@ class GNSSGo:
         return StationCatalog(
             self.settings.stations.catalog_path,
             seed_if_empty=self.settings.stations.auto_seed,
+        )
+
+    def _supports_igs_directory_batch(self, priority: list[str]) -> bool:
+        registered = set(self.registry.names())
+        providers = [
+            self.registry.get(name)
+            for name in priority
+            if name.lower() in registered
+        ]
+        return bool(providers) and all(
+            hasattr(provider, "_search_observations_by_day_directory")
+            for provider in providers
         )
 
     def _observation_provider_routes(
@@ -1124,18 +1576,36 @@ class GNSSGo:
         self,
         provider: str,
         search: Callable[[object], Awaitable[list[RemoteFile]]],
+        *,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token: CancellationToken | None = None,
+        started_at: float | None = None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> tuple[list[RemoteFile], list[ProviderAttempt]]:
+        started = started_at or monotonic()
         if provider != "auto":
             try:
+                _raise_if_plan_cancelled(cancellation_token)
                 files = await search(self.registry.get(provider))
             except GNSSGoError as exc:
                 return [], [ProviderAttempt(provider=provider, status="failed", message=str(exc))]
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.CHECKING_AVAILABILITY,
+                completed=1,
+                total=1,
+                message=f"Checked {provider}",
+                estimate=plan_estimate,
+            )
             status = "success" if files else "not_found"
             return files, [ProviderAttempt(provider=provider, status=status)]
 
         attempts: list[ProviderAttempt] = []
-        for candidate in self.registry.ordered(self.settings.provider.priority):
+        candidates = self.registry.ordered(self.settings.provider.priority)
+        for index, candidate in enumerate(candidates, start=1):
             try:
+                _raise_if_plan_cancelled(cancellation_token)
                 files = await search(candidate)
             except (GNSSGoError, OSError) as exc:
                 attempts.append(
@@ -1146,6 +1616,15 @@ class GNSSGo:
                     )
                 )
                 continue
+            _emit_plan_progress(
+                progress_callback,
+                started,
+                PlanStage.CHECKING_AVAILABILITY,
+                completed=index,
+                total=len(candidates),
+                message=f"Checked {candidate.name}",
+                estimate=plan_estimate,
+            )
             if files:
                 attempts.append(ProviderAttempt(provider=candidate.name, status="success"))
                 return files, attempts
@@ -1159,6 +1638,63 @@ def _first_in_priority(values: list[str], priority: list[str]) -> str:
         if item in wanted:
             return item
     return values[0]
+
+
+def _emit_plan_progress(
+    callback: PlanProgressCallback | None,
+    started_at: float,
+    stage: PlanStage,
+    *,
+    message: str,
+    completed: int | None = None,
+    total: int | None = None,
+    cancelable: bool = True,
+    estimate: PlanEstimate | None = None,
+) -> None:
+    progress = PlanProgress(
+        stage=stage,
+        completed=completed,
+        total=total,
+        message=message,
+        elapsed_seconds=max(0.0, monotonic() - started_at),
+        cancelable=cancelable,
+        estimate=estimate,
+    )
+    if completed is not None and total is not None:
+        LOGGER.debug(
+            "[PLAN] stage=%s completed=%s/%s elapsed=%.1fs message=%s",
+            stage.value,
+            completed,
+            total,
+            progress.elapsed_seconds,
+            message,
+        )
+    else:
+        LOGGER.debug(
+            "[PLAN] stage=%s elapsed=%.1fs message=%s",
+            stage.value,
+            progress.elapsed_seconds,
+            message,
+        )
+    if callback is not None:
+        callback(progress)
+
+
+def _raise_if_plan_cancelled(cancellation_token: CancellationToken | None) -> None:
+    if cancellation_token is not None and cancellation_token.cancelled:
+        raise PlanCancelledError("Planning cancelled")
+
+
+def _estimate_observation_plan(stations: list[str], date_range: DateRange) -> PlanEstimate:
+    station_count = len(stations)
+    day_count = len(date_range.days())
+    candidate_file_count = station_count * day_count
+    return PlanEstimate(
+        station_count=station_count,
+        day_count=day_count,
+        candidate_file_count=candidate_file_count,
+        large=candidate_file_count > 20_000,
+    )
 
 
 def _expected_rinex_type(data_type: str) -> str | None:
@@ -1197,6 +1733,28 @@ def _deduplicate_logical_files(remotes: list[RemoteFile]) -> list[RemoteFile]:
         seen.add(key)
         unique.append(remote)
     return unique
+
+
+def _sort_remote_files_for_request(
+    request: ObservationRequest | NavigationRequest | ProductRequest,
+    remotes: list[RemoteFile],
+) -> list[RemoteFile]:
+    if isinstance(request, ObservationRequest):
+        station_order = {
+            station.upper(): index
+            for index, station in enumerate(request.stations or [])
+        }
+        return sorted(
+            remotes,
+            key=lambda remote: (
+                station_order.get((remote.station or "").upper(), len(station_order)),
+                remote.date or date.min,
+                remote.filename,
+            ),
+        )
+    if isinstance(request, NavigationRequest):
+        return sorted(remotes, key=lambda remote: (remote.date or date.min, remote.filename))
+    return remotes
 
 
 def _observation_missing_entries(

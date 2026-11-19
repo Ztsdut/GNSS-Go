@@ -137,6 +137,7 @@ class ProductsPage(CorePage):
 
         self.output = QtWidgets.QLineEdit()
         self.output.setPlaceholderText(tr("Default archive location"))
+        self.output.textChanged.connect(self.invalidate_plan)
         output_row = QtWidgets.QWidget()
         output_layout = QtWidgets.QHBoxLayout(output_row)
         output_layout.setContentsMargins(0, 0, 0, 0)
@@ -181,9 +182,9 @@ class ProductsPage(CorePage):
         layout.addWidget(split, 1)
 
         buttons = QtWidgets.QHBoxLayout()
-        self.review = QtWidgets.QPushButton(tr("Review Plan"))
+        self.review = QtWidgets.QPushButton(tr("Plan"))
         self.review.setObjectName("PrimaryButton")
-        self.review.clicked.connect(self.submit)
+        self.register_plan_button(self.review, self.submit)
         buttons.addStretch(1)
         buttons.addWidget(self.review)
         layout.addLayout(buttons)
@@ -246,7 +247,7 @@ class ProductsPage(CorePage):
             name="Product download",
             task_type=GuiTaskType.PRODUCT,
             request=request,
-            planner=lambda: self.core.plan_products(**request),
+            planner=lambda **kwargs: self.core.plan_products(**request, **kwargs),
         )
 
     def _apply_quick_setup(self, _index: int) -> None:
@@ -273,6 +274,7 @@ class ProductsPage(CorePage):
         self._request_changed()
 
     def _request_changed(self, *_args) -> None:
+        self.invalidate_plan()
         self._remember_resolutions()
         self._refresh_resolution_rows()
         self._update_bundle_preview()
@@ -328,13 +330,16 @@ class ProductsPage(CorePage):
         self.resolution_hint.setVisible(bool(products))
 
     def _resolution_changed(self, *_args) -> None:
+        self.invalidate_plan()
         self._remember_resolutions()
         self._update_bundle_preview()
 
     def _update_bundle_preview(self, *_args) -> None:
         products = self.selected_products()
         tier = self.tier.currentText() if hasattr(self, "tier") else "auto"
-        self.bundle_summary.setText(tr("{count} products").format(count=len(products)) + f" · {tier}")
+        self.bundle_summary.setText(
+            tr("{count} products").format(count=len(products)) + f" · {tier}"
+        )
         self.bundle_list.clear()
         if not products:
             self.bundle_list.addItem(tr("Select one or more product types"))

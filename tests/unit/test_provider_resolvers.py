@@ -3,7 +3,7 @@ from datetime import date
 import httpx
 import pytest
 
-from gnssgo.models import DateRange, NavigationType, ObservationRequest, ProductType
+from gnssgo.models import DateRange, NavigationType, ObservationRequest
 from gnssgo.providers.bkg import BKGPathResolver, BKGProvider
 from gnssgo.providers.mirrors import (
     bdsmart_provider,
@@ -104,4 +104,40 @@ async def test_bkg_obs_listing_discovery() -> None:
     assert len(files) == 1
     assert files[0].filename == "WUH200CHN_R_20262130000_01D_30S_MO.crx.gz"
 
+
+@pytest.mark.anyio
+async def test_igs_mirror_observation_plan_lists_each_day_once() -> None:
+    calls: list[str] = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        calls.append(url)
+        doy = url.rstrip("/").rsplit("/", 1)[-1]
+        year = url.rstrip("/").rsplit("/", 2)[-2]
+        names = [
+            f"AAAA00AAA_R_{year}{doy}0000_01D_30S_MO.crx.gz",
+            f"BBBB00BBB_R_{year}{doy}0000_01D_30S_MO.crx.gz",
+            f"CCCC00CCC_R_{year}{doy}0000_01D_30S_MO.crx.gz",
+        ]
+        return httpx.Response(
+            200,
+            text="\n".join(f'<a href="{name}">{name}</a>' for name in names),
+        )
+
+    provider = bdsmart_provider(check_existing=True)
+    provider.client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    request = ObservationRequest(
+        stations=["AAAA00AAA", "BBBB00BBB", "CCCC00CCC"],
+        date_range=DateRange(start="2026-08-01", end="2026-08-02"),
+        provider="bdsmart",
+        rinex="3",
+    )
+
+    files = await provider.search_observations(request)
+
+    assert len(files) == 6
+    assert calls == [
+        "https://data.bdsmart.cn/pub/data/igs/2026/213/",
+        "https://data.bdsmart.cn/pub/data/igs/2026/214/",
+    ]
 

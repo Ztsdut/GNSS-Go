@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import suppress
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -8,11 +9,11 @@ from gnssgo import GNSSGo
 from gnssgo.archive import ArchiveLayout
 from gnssgo.data_networks import default_data_network_registry
 from gnssgo.models import DateRange, DownloadPlan, ProductRequest, ProductType
+from gnssgo.plan import PlanEstimate, PlanProgressCallback
 from gnssgo.products import ProductNamingRegistry, ProductPresetRegistry, parse_product_filename
 from gnssgo.stations import StationCatalog
 from gnssgo.stations.catalog import seed_stations
 from gnssgo.stations.snapshot import load_bundled_station_snapshot, snapshot_metadata
-
 
 _EUROPE_CATALOG_VERSIONS = {
     "epn": 5,
@@ -78,11 +79,8 @@ class CoreService:
         # Repair malformed SIRGAS coordinates from older parser/cache versions at
         # startup.  This removes Antarctica/Africa/Asia ghost points immediately
         # without asking the user to delete stations.sqlite by hand.
-        try:
+        with suppress(Exception):
             self.client._station_catalog().sanitize_sirgas_coordinates()
-        except Exception:
-            # Catalog cleanup is defensive; GUI startup must never depend on it.
-            pass
 
         # Load the release-time station-position snapshot before constructing any
         # GUI page.  This gives the map thousands of usable coordinates immediately
@@ -175,7 +173,13 @@ class CoreService:
         # when the network is offline.  Taiwan is refreshed from GDMS in a GUI
         # background worker after startup; a failed refresh leaves this snapshot
         # untouched.
-        for provider_name, network_id in (("gdms_tw", "taiwan"), ("cmonoc_cn", "china"), ("satref_hk", "hong_kong"), ("epn", "europe")):
+        bundled_sources = (
+            ("gdms_tw", "taiwan"),
+            ("cmonoc_cn", "china"),
+            ("satref_hk", "hong_kong"),
+            ("epn", "europe"),
+        )
+        for provider_name, network_id in bundled_sources:
             try:
                 provider = self.client.registry.get(provider_name)
                 stations = list(provider.bundled_station_catalog())
@@ -218,6 +222,9 @@ class CoreService:
         discover_available: bool = False,
         country: str | None = None,
         output: str | Path | None = None,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token=None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
         return self.client.plan_observations(
             stations=stations or [],
@@ -236,6 +243,9 @@ class CoreService:
             discover_available=discover_available,
             country=country,
             output=output,
+            progress_callback=progress_callback,
+            cancellation_token=cancellation_token,
+            plan_estimate=plan_estimate,
         )
 
     def plan_navigation(
@@ -246,6 +256,9 @@ class CoreService:
         nav_type: str = "mixed",
         provider: str = "auto",
         output: str | Path | None = None,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token=None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
         return self.client.plan_navigation(
             start=start,
@@ -253,6 +266,9 @@ class CoreService:
             nav_type=nav_type,
             provider=provider,
             output=output,
+            progress_callback=progress_callback,
+            cancellation_token=cancellation_token,
+            plan_estimate=plan_estimate,
         )
 
     def plan_products(
@@ -268,6 +284,9 @@ class CoreService:
         sampling: str | None = None,
         sampling_by_product: dict[str, str | None] | None = None,
         output: str | Path | None = None,
+        progress_callback: PlanProgressCallback | None = None,
+        cancellation_token=None,
+        plan_estimate: PlanEstimate | None = None,
     ) -> DownloadPlan:
         if not sampling_by_product:
             return self.client.plan_products(
@@ -280,6 +299,9 @@ class CoreService:
                 system=system,
                 sampling=sampling,
                 output=output,
+                progress_callback=progress_callback,
+                cancellation_token=cancellation_token,
+                plan_estimate=plan_estimate,
             )
 
         plans: list[DownloadPlan] = []
@@ -295,6 +317,9 @@ class CoreService:
                     system=system,
                     sampling=sampling_by_product.get(product_type),
                     output=output,
+                    progress_callback=progress_callback,
+                    cancellation_token=cancellation_token,
+                    plan_estimate=plan_estimate,
                 )
             )
         return _merge_product_plans(plans, provider=provider)
@@ -399,9 +424,7 @@ class CoreService:
             return True
 
         age = catalog.metadata_age_days(provider_name)
-        if age is None or age > max_age_days:
-            return True
-        return False
+        return bool(age is None or age > max_age_days)
 
     def network_catalog_needs_refresh(
         self,

@@ -21,13 +21,18 @@ class NavigationPage(CorePage):
         layout.addWidget(title)
         layout.addWidget(subtitle)
         self.dates = DateRangeWidget()
+        self.dates.start.dateChanged.connect(self.invalidate_plan)
+        self.dates.end.dateChanged.connect(self.invalidate_plan)
         layout.addWidget(self.dates)
         form = QtWidgets.QFormLayout()
         self.nav_type = QtWidgets.QComboBox()
         self.nav_type.addItems(["mixed", "gps", "glonass", "galileo", "beidou"])
+        self.nav_type.currentTextChanged.connect(self.invalidate_plan)
         self.provider = ProviderSelector(self.core.providers_for("navigation"))
+        self.provider.currentTextChanged.connect(self.invalidate_plan)
         self.output = QtWidgets.QLineEdit()
         self.output.setPlaceholderText(tr("Default archive location"))
+        self.output.textChanged.connect(self.invalidate_plan)
         output_row = QtWidgets.QWidget()
         output_layout = QtWidgets.QHBoxLayout(output_row)
         output_layout.setContentsMargins(0, 0, 0, 0)
@@ -42,10 +47,10 @@ class NavigationPage(CorePage):
         form.addRow("Provider", self.provider)
         form.addRow("Output", output_row)
         layout.addLayout(form)
-        dry = QtWidgets.QPushButton(tr("Review Plan"))
-        dry.setObjectName("PrimaryButton")
-        dry.clicked.connect(self.submit)
-        layout.addWidget(dry)
+        self.review = QtWidgets.QPushButton(tr("Plan"))
+        self.review.setObjectName("PrimaryButton")
+        self.register_plan_button(self.review, self.submit)
+        layout.addWidget(self.review)
         layout.addStretch(1)
 
     def _browse_output(self) -> None:
@@ -66,5 +71,5 @@ class NavigationPage(CorePage):
             name="Navigation download",
             task_type=GuiTaskType.NAV,
             request=request,
-            planner=lambda: self.core.plan_navigation(**request),
+            planner=lambda **kwargs: self.core.plan_navigation(**request, **kwargs),
         )

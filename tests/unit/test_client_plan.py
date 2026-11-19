@@ -1,6 +1,8 @@
 from gnssgo import GNSSGo
 from gnssgo.config import load_settings
+from gnssgo.download.events import CancellationToken
 from gnssgo.models import NavigationRequest, ObservationRequest, RemoteFile
+from gnssgo.plan import PlanCancelledError, PlanProgress, PlanStage
 from gnssgo.providers.base import GNSSProvider, ProviderCapabilities
 from gnssgo.providers.registry import ProviderRegistry
 from gnssgo.stations import StationCatalog
@@ -225,7 +227,13 @@ def test_epn_plan_keeps_stations_and_date_range_batched(tmp_path) -> None:
             return ProviderCapabilities(observations=True, station_metadata=True)
 
         async def search_observations(self, request: ObservationRequest) -> list[RemoteFile]:
-            self.calls.append((list(request.stations or []), request.date_range.start, request.date_range.end))
+            self.calls.append(
+                (
+                    list(request.stations or []),
+                    request.date_range.start,
+                    request.date_range.end,
+                )
+            )
             files: list[RemoteFile] = []
             for station in request.stations or []:
                 for day in request.date_range.days():
@@ -302,3 +310,44 @@ def test_epn_plan_keeps_stations_and_date_range_batched(tmp_path) -> None:
     assert str(end) == "2026-08-02"
     assert len(plan.remote_files) == 4
     assert not plan.unavailable
+
+
+def test_observation_plan_reports_real_progress(tmp_path) -> None:
+    client = fake_obs_client(tmp_path)
+    progress: list[PlanProgress] = []
+
+    plan = client.plan_observations(
+        stations=["WUH200CHN"],
+        start="2026-213",
+        end="2026-213",
+        output=tmp_path,
+        progress_callback=progress.append,
+    )
+
+    stages = [item.stage for item in progress]
+    assert plan.remote_files
+    assert stages[0] == PlanStage.PREPARING
+    assert PlanStage.RESOLVING_STATIONS in stages
+    assert PlanStage.CHECKING_AVAILABILITY in stages
+    assert PlanStage.BUILDING_TASKS in stages
+    assert stages[-1] == PlanStage.COMPLETED
+    assert all(item.elapsed_seconds >= 0 for item in progress)
+
+
+def test_observation_plan_can_be_cancelled_before_remote_checks(tmp_path) -> None:
+    client = fake_obs_client(tmp_path)
+    token = CancellationToken()
+    token.cancel()
+
+    try:
+        client.plan_observations(
+            stations=["WUH200CHN"],
+            start="2026-213",
+            end="2026-213",
+            output=tmp_path,
+            cancellation_token=token,
+        )
+    except PlanCancelledError as exc:
+        assert str(exc) == "Planning cancelled"
+    else:
+        raise AssertionError("cancelled planning should raise PlanCancelledError")

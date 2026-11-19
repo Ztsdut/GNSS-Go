@@ -108,6 +108,27 @@ def app_qss(theme: str = "light") -> str:
         border: 1px solid {colors["border"]};
         border-radius: 10px;
     }}
+    QFrame#PlanProgressPanel {{
+        background: {colors["surface"]};
+        border: 1px solid {colors["border"]};
+        border-radius: 10px;
+    }}
+    QDialog#PlanSummaryPopup {{
+        background: {colors["surface"]};
+        border: 1px solid {colors["border"]};
+        border-radius: 10px;
+    }}
+    QToolButton#PlanStatusButton {{
+        padding: 3px 8px;
+        border: 1px solid {colors["border"]};
+        border-radius: 4px;
+        background: {colors["surface_muted"]};
+        color: {colors["accent"]};
+    }}
+    QToolButton#PlanStatusButton:hover {{
+        background: {colors["selection"]};
+        color: {colors["selected_text"]};
+    }}
 
     QFrame#RightControlPanel {{
         background: {colors["surface"]};

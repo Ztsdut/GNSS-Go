@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# ruff: noqa: E501
 import re
 from pathlib import Path
 
@@ -56,7 +57,12 @@ class ObservationsPage(CorePage):
 
         title = QtWidgets.QLabel(tr("GNSS Data Download"))
         title.setObjectName("PageTitle")
-        subtitle = QtWidgets.QLabel(tr("Browse stations on one map, select targets, set date and sampling, then review the download plan."))
+        subtitle = QtWidgets.QLabel(
+            tr(
+                "Browse stations on one map, select targets, set date and sampling, "
+                "then review the download plan."
+            )
+        )
         subtitle.setObjectName("PageSubtitle")
         main.addWidget(title)
         main.addWidget(subtitle)
@@ -70,6 +76,7 @@ class ObservationsPage(CorePage):
         self.station_search.setPlaceholderText(tr("Search station ID, country, network or source…"))
         self.station_search.setClearButtonEnabled(True)
         self.station_search.textChanged.connect(self.schedule_map_refresh)
+        self.station_search.textChanged.connect(self.invalidate_plan)
         station_tools_layout.addWidget(self.station_search, 1)
 
         self.paste_ids_button = QtWidgets.QPushButton(tr("Paste Stations"))
@@ -139,13 +146,19 @@ class ObservationsPage(CorePage):
 
         self.dates = DateRangeWidget()
         self.dates.set_compact_mode(True)
+        self.dates.start.dateChanged.connect(self.invalidate_plan)
+        self.dates.end.dateChanged.connect(self.invalidate_plan)
         self.provider = ProviderSelector(self.core.providers_for("observations"))
         self.provider.currentTextChanged.connect(self.refresh_sampling_options)
+        self.provider.currentTextChanged.connect(self.invalidate_plan)
         self.rinex = QtWidgets.QComboBox()
         self.rinex.addItems(["auto", "2", "3", "4"])
+        self.rinex.currentTextChanged.connect(self.invalidate_plan)
         self.sampling = QtWidgets.QComboBox()
+        self.sampling.currentIndexChanged.connect(self.invalidate_plan)
         self.output = QtWidgets.QLineEdit()
         self.output.setPlaceholderText(tr("Default archive location"))
+        self.output.textChanged.connect(self.invalidate_plan)
         output_browse = QtWidgets.QPushButton(tr("Browse…"))
         output_browse.setObjectName("SecondaryButton")
         output_browse.clicked.connect(self._browse_output)
@@ -166,11 +179,11 @@ class ObservationsPage(CorePage):
         output_row.addWidget(output_browse)
         config_layout.addLayout(output_row)
 
-        review = QtWidgets.QPushButton(tr("Plan (PLAN)"))
-        review.setObjectName("PrimaryButton")
-        review.clicked.connect(self.submit)
+        self.review = QtWidgets.QPushButton(tr("Plan"))
+        self.review.setObjectName("PrimaryButton")
+        self.register_plan_button(self.review, self.submit)
         config_layout.addSpacing(4)
-        config_layout.addWidget(review)
+        config_layout.addWidget(self.review)
         config_layout.addStretch(1)
 
         # Persistent visibility filters on the left.
@@ -188,7 +201,9 @@ class ObservationsPage(CorePage):
         filter_title = QtWidgets.QLabel(tr("Region / Data Source"))
         filter_title.setObjectName("SectionTitle")
         filter_layout.addWidget(filter_title)
-        filter_hint = QtWidgets.QLabel(tr("Select global IGS or regional sources by continent/country."))
+        filter_hint = QtWidgets.QLabel(
+            tr("Select global IGS or regional sources by continent/country.")
+        )
         filter_hint.setWordWrap(True)
         filter_hint.setObjectName("mapHintLabel")
         filter_layout.addWidget(filter_hint)
@@ -231,7 +246,9 @@ class ObservationsPage(CorePage):
         # Taiwan GDMS publishes a downloadable station list behind its map page.
         # Check for a fresh official catalog once per desktop session without
         # blocking startup; the bundled CSV remains available offline.
-        _QtCore.QTimer.singleShot(350, self._refresh_session_catalogs)
+        app = QtWidgets.QApplication.instance()
+        if not bool(app and app.property("gnssgo_skip_session_catalog_refresh")):
+            _QtCore.QTimer.singleShot(350, self._refresh_session_catalogs)
 
     def _language_changed(self, _language: str) -> None:
         # Static labels are retranslated by MainWindow; these counters/tooltips
@@ -319,7 +336,7 @@ class ObservationsPage(CorePage):
             name="Observation download",
             task_type=GuiTaskType.OBS,
             request=request,
-            planner=lambda: self.core.plan_observations(**request),
+            planner=lambda **kwargs: self.core.plan_observations(**request, **kwargs),
         )
 
     def station_ids(self) -> list[str]:
@@ -331,6 +348,7 @@ class ObservationsPage(CorePage):
             self.selected_from_map.add(station_id)
         else:
             self.selected_from_map.discard(station_id)
+        self.invalidate_plan()
         self.map.set_selected(self.selected_from_map)
         if self.station_table.model() is not None:
             self.station_table.viewport().update()
@@ -339,6 +357,7 @@ class ObservationsPage(CorePage):
     def _map_selection_cleared(self) -> None:
         self.selected_from_map.clear()
         self._manual_station_selection = False
+        self.invalidate_plan()
         if self.station_table.model() is not None:
             self.station_table.viewport().update()
         self._update_filter_status()
@@ -352,6 +371,7 @@ class ObservationsPage(CorePage):
         """
         self.selected_from_map.clear()
         self._manual_station_selection = False
+        self.invalidate_plan()
         if hasattr(self, "map"):
             self.map.set_selected(self.selected_from_map)
         self.refresh_sampling_options()
@@ -477,7 +497,9 @@ class ObservationsPage(CorePage):
         if self.station_table_frame.isVisible():
             self._refresh_station_table()
         else:
-            self.table_summary.setText(tr("{count} visible").format(count=len(self._visible_stations)))
+            self.table_summary.setText(
+                tr("{count} visible").format(count=len(self._visible_stations))
+            )
         self._update_filter_status()
 
     def selected_regional_sources(self) -> list[str] | None:
@@ -518,6 +540,7 @@ class ObservationsPage(CorePage):
 
     def _table_selection_changed(self, *_args) -> None:
         self._manual_station_selection = True
+        self.invalidate_plan()
         self.map.set_selected(self.selected_from_map)
         self._update_filter_status()
 
@@ -567,6 +590,7 @@ class ObservationsPage(CorePage):
                 self.selected_from_map.add(station_id)
                 added += 1
         self.map.set_selected(self.selected_from_map)
+        self.invalidate_plan()
         if self.station_table.model() is not None:
             self.station_table.viewport().update()
         self._update_filter_status()
@@ -606,7 +630,10 @@ class ObservationsPage(CorePage):
                 )
             )
             self.filter_status.setToolTip(
-                tr("{source} uses the official daily directory. Click a station to switch to an explicit station selection.").format(
+                tr(
+                    "{source} uses the official daily directory. Click a station to "
+                    "switch to an explicit station selection."
+                ).format(
                     source=source_label
                 )
             )
