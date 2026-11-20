@@ -93,7 +93,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p release
-          packaging/macos/build_dmg.sh "${{ steps.version.outputs.value }}"
+          bash packaging/macos/build_dmg.sh "${{ steps.version.outputs.value }}"
           cp dist/gnssgo "release/gnssgo-${{ steps.version.outputs.value }}-macOS"
 
       - name: Package Linux AppImage
@@ -103,7 +103,7 @@ jobs:
           mkdir -p release build
           curl -L -o build/appimagetool-x86_64.AppImage https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x build/appimagetool-x86_64.AppImage
-          APPIMAGE_TOOL="$PWD/build/appimagetool-x86_64.AppImage" packaging/linux/build_appimage.sh "${{ steps.version.outputs.value }}"
+          APPIMAGE_TOOL="$PWD/build/appimagetool-x86_64.AppImage" bash packaging/linux/build_appimage.sh "${{ steps.version.outputs.value }}"
           cp dist/gnssgo "release/gnssgo-${{ steps.version.outputs.value }}-Linux-x86_64"
 
       - uses: actions/upload-artifact@v4

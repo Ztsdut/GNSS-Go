@@ -2,6 +2,10 @@
 
 ## 0.1.2
 
+- Added cancellable planning progress with a clickable status-bar progress panel and plan review.
+- Batched observation discovery by day and cached directory listings for large requests.
+- Isolated the WHU resolver unit test from the live FTP service.
+- Fixed macOS and Linux release script invocation when executable permissions are absent.
 - Bundled an offline EPN station-coordinate fallback so European stations are visible immediately.
 - Added silent EPN background refresh after startup.
 - Removed the unused NASA-authenticated archive integration and related configuration/documentation.
